@@ -27,3 +27,6 @@ milestone.
 The main purpose of this document is to give you some rules for team 
 
 process, management, tracking, and goal setting. 
+
+
+*To Commit: use `git cz` instead of `git commit` to enjoy something fun~*
