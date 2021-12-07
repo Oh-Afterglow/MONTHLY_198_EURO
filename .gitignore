@@ -16,3 +16,5 @@
 
 # node modules (actually for commitizen)
 node_modules/
+.idea/
+.vscode/
