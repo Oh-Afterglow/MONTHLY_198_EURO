@@ -5,3 +5,4 @@ export * from './issue.repository';
 export * from './pull.repository';
 export * from './comments-issue.repository';
 export * from './label.repository';
+export * from './user-extension.repository';

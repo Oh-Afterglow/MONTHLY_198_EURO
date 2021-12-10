@@ -14,7 +14,7 @@ export class ProjRepoRepository extends DefaultCrudRepository<
 
   public readonly repos_belongs_to_user: BelongsToAccessor<GithubUser, typeof ProjRepo.prototype.id>;
 
-  public readonly user: HasManyThroughRepositoryFactory<GithubUser, typeof GithubUser.prototype.id,
+  public readonly issue_adder: HasManyThroughRepositoryFactory<GithubUser, typeof GithubUser.prototype.id,
           Issue,
           typeof ProjRepo.prototype.id
         >;
@@ -29,8 +29,9 @@ export class ProjRepoRepository extends DefaultCrudRepository<
   ) {
     super(ProjRepo, dataSource);
     this.pr_sender = this.createHasManyThroughRepositoryFactoryFor('pr_sender', githubUserRepositoryGetter, pullRepositoryGetter,);
-    this.user = this.createHasManyThroughRepositoryFactoryFor('user', githubUserRepositoryGetter, issueRepositoryGetter,);
-    this.registerInclusionResolver('user', this.user.inclusionResolver);
+    this.registerInclusionResolver('pr_sender', this.pr_sender.inclusionResolver);
+    this.issue_adder = this.createHasManyThroughRepositoryFactoryFor('issue_adder', githubUserRepositoryGetter, issueRepositoryGetter,);
+    this.registerInclusionResolver('issue_adder', this.issue_adder.inclusionResolver);
     this.repos_belongs_to_user = this.createBelongsToAccessorFor('repos_belongs_to_user', githubUserRepositoryGetter,);
     this.registerInclusionResolver('repos_belongs_to_user', this.repos_belongs_to_user.inclusionResolver);
   }

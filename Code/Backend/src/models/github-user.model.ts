@@ -94,6 +94,12 @@ export class GithubUser extends Entity {
   })
   blog?: string;
 
+  @property({
+    type: 'array',
+    itemType: 'number',
+  })
+  org_ids?: number[];
+
 
   constructor(data?: Partial<GithubUser>) {
     super(data);
