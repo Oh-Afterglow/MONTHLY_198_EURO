@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {ProjRepo} from './proj-repo.model';
 
 @model()
 export class UserExtension extends Entity {

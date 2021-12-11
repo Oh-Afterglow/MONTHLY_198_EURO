@@ -13,6 +13,9 @@ export class GithubUser extends Entity {
   @property({
     type: 'string',
     required: true,
+    index: {
+      unique: true,
+    },
   })
   login_name: string;
 

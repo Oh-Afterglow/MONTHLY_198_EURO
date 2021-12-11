@@ -28,6 +28,9 @@ export class ProjRepo extends Entity {
   @property({
     type: 'string',
     required: true,
+    index: {
+      unique: true,
+    },
   })
   full_name: string;
 
@@ -121,6 +124,11 @@ export class ProjRepo extends Entity {
 
   @hasMany(() => GithubUser, {through: {model: () => Pull, keyFrom: 'repos_id', keyTo: 'pr_sender_id'}})
   pr_sender: GithubUser[];
+
+  @property({
+    type: 'string',
+  })
+  viewer_id?: string;
 
   constructor(data?: Partial<ProjRepo>) {
     super(data);
