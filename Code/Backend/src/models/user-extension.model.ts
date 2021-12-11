@@ -22,9 +22,9 @@ export class UserExtension extends Entity {
 
   @property({
     type: 'array',
-    itemType: 'number',
+    itemType: 'string',
   })
-  repo_view_list: number[];
+  repo_view_list: string[];
 
   @property({
     type: 'boolean',
