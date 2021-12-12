@@ -5,8 +5,9 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import ProTip from './ProTip';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import SignIn from './pages/Signin';
 import Dashboard from './pages/Dashboard';
+import SignIn from './pages/Signin';
+import SignUp from './pages/Signup';
 
 function Copyright() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
       <Routes>
         <Route path='/' element={<Dashboard />} />
         <Route path='/signin' element={<SignIn />} />
+        <Route path='/signup' element={<SignUp />} />
       </Routes>
     </BrowserRouter>
   );
