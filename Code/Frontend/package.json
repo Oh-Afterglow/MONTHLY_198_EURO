@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
+    "@jiaminghi/data-view-react": "^1.2.5",
     "@mui/icons-material": "^5.2.0",
     "@mui/material": "latest",
     "axios": "^0.24.0",
