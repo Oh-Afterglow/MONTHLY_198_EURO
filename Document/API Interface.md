@@ -1,5 +1,29 @@
 # xxx
 
+- /signup POST
+- 注册
+
+```ts
+type request = {
+  username: string;
+  email: string;
+  githubName: string;
+  password: string;
+};
+// status code: 200 OK / 400 Bad Request
+```
+
+- /login POST
+- 登录
+
+```ts
+type request = {
+  email: string;
+  password: string;
+};
+// status code: 200 OK / 400 Bad Request
+```
+
 - /project/compose GET
 - 获取项目的构成
 
@@ -87,6 +111,85 @@ const sample: response = [
       { name: 'week3', value: [130, 140, 150, 160, 170, 180] },
       { name: 'week4', value: [190, 200, 210, 220, 230, 240] },
     ],
+  },
+];
+```
+
+- /member/compose GET
+- 获取社区的人员构成
+
+```ts
+type request = { projectName: string };
+
+type response = { name: string; value: string }[];
+// 返回结构: 一个数组, 每一项包含了 { name: 来源名, value: 数量(绝对数量) }
+const sample: response = [
+  { name: 'Google', value: '100' },
+  { name: 'Facebook', value: '300' },
+];
+```
+
+- /member/events GET
+- 获取社区的人员变动事件
+
+```ts
+type request = { projectName: string };
+type response = { time: string; event: string }[];
+// 返回结构: 一个数组, 每一项包含了 { time: 时间, event: 事件描述 }
+const sample: response = [
+  { time: '2020-01-01', event: 'Linus Torvalds join the organization' },
+  { time: '2020-01-02', event: 'Linus Torvalds leave the organization' },
+];
+```
+
+- /member/members GET
+- 获取社区的所有成员
+
+```ts
+type request = { projectName: string };
+type response = { name: string; avatar: string; description: string }[];
+// 返回结构: 一个数组, 每一项包含了 { name: 成员名, avatar: 头像(一个url,没有的话可以返回名字字符串,MUI会取第一个字符渲染), description: 描述 }
+const sample: response = [
+  {
+    name: 'Linus Torvalds',
+    avatar: 'https://avatars0.githubusercontent.com/u/1?s=460&v=4',
+    description: 'Linus Torvalds is a Linux kernel developer',
+  },
+  {
+    name: 'Mark Zuckerberg',
+    avatar: 'https://avatars0.githubusercontent.com/u/2?s=460&v=4',
+    description: 'Mark Zuckerberg is a Facebook developer',
+  },
+];
+```
+
+- /member/projects GET
+- 获取一个成员的所有项目
+
+```ts
+type request = { memberName: string };
+type response = {
+  name: string;
+  description: string;
+  major: string;
+  stars: number;
+  lastUpdate: string;
+}[];
+// 返回结构: 一个数组, 每一项包含了 { name: 项目名, description: 描述, major: 最主要的语言, stars: 赞数, lastUpdate: 最后更新时间 }
+const sample: response = [
+  {
+    name: 'Linux Kernel',
+    description: 'Linux Kernel is a Linux kernel development',
+    major: 'C',
+    stars: 100,
+    lastUpdate: '2020-01-01',
+  },
+  {
+    name: 'Facebook',
+    description: 'Facebook is a Facebook development',
+    major: 'Java',
+    stars: 300,
+    lastUpdate: '2020-01-02',
   },
 ];
 ```
