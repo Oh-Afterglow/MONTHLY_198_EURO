@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import SignIn from './pages/Signin';
 import SignUp from './pages/Signup';
+import Member from './pages/Member';
 
 function Copyright() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path='/' element={<Dashboard />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
+        <Route path='/member' element={<Member />} />
       </Routes>
     </BrowserRouter>
   );
