@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Layout from '../components/Layout';
-import NumberCard from '../components/NumberCard';
 import PieChart from '../components/PieChart';
-import BarChart from '../components/BarChart';
 import request from '../utils/request';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
 import MemberTable from '../components/MemberTable';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import MemberCard from '../components/MemberCard';
 import ProjectCard from '../components/ProjectCard';
+import { Card } from '@mui/material';
 
 
 const Member = ({ projectName }) => {
@@ -85,13 +81,16 @@ const Member = ({ projectName }) => {
 
   return (
     <Layout>
+      
       <Grid item container direction='column' xs={12} sm={4}>
         <PieChart
           title={'Member from'}
           data={composeData}
           style={pieChartStyle}
         />
-        {/* <MemberTable /> */}
+        <Card style={{marginLeft:"1rem",marginRight:"1rem"}}>
+          <MemberTable />
+        </Card>
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
         {memberCards}

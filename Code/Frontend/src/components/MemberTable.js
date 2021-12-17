@@ -1,5 +1,11 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 
 const MemberTable = () => {
   const cols = [
@@ -15,14 +21,25 @@ const MemberTable = () => {
     { id:4, time: '2021/11/11', event: 'Development04 join the team'},
   ];
 
+  const tableHead = cols.map((col) => (
+    <TableCell key={col.field}>{col.headerName}</TableCell>
+  ));
+
+  const tableRows = rows.map((row) => {
+    const cells = cols.map((col) => (
+      <TableCell key={col.field + row.id}>{row[col.field]}</TableCell>
+    ));
+    return <TableRow key={row.id}>{cells}</TableRow>;
+  });
+
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={cols}
-        pageSize={5}
-        owsPerPageOptions={[3]}
-      />
+    <div>
+     <Table>
+        <TableHead>
+          <TableRow>{tableHead}</TableRow>
+        </TableHead>
+        <TableBody>{tableRows}</TableBody>
+      </Table>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import ProjectTable from '../components/ProjectTable';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { Card } from '@mui/material';
 
 const Dashboard = ({ projectName }) => {
   // TODO: Replace with some default data
@@ -302,7 +303,9 @@ const Dashboard = ({ projectName }) => {
         />
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
-        <ProjectTable />
+        <Card style={{marginTop:"1rem",marginRight:"1rem"}}>
+          <ProjectTable />
+        </Card>
       </Grid>
     </Layout>
   );
