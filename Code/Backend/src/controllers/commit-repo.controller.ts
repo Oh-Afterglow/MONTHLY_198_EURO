@@ -11,6 +11,7 @@ import {
   ProjRepo,
 } from '../models';
 import {CommitRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class CommitRepoController {
   constructor(
@@ -18,6 +19,7 @@ export class CommitRepoController {
     public commitRepository: CommitRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/commits/{id}/repo', {
     responses: {
       '200': {
