@@ -9,6 +9,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import MemberTable from '../components/MemberTable';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import MemberCard from '../components/MemberCard';
 
 const Member = ({ projectName }) => {
   // TODO: Replace with some default data
@@ -19,7 +20,18 @@ const Member = ({ projectName }) => {
     { name: 'ZJU', value: 10 },
   ]);
 
-
+  const [members, setMembers] = useState([
+    {
+      name: '张三',
+      avatar: 'https://avatars0.githubusercontent.com/u/8186664?s=460&v=4',
+      description: '这个人很懒，什么都没有留下',
+    },
+    {
+      name: '李四',
+      avatar: 'https://avatars0.githubusercontent.com/u/8186664?s=460&v=4',
+      description: '这个人很懒，什么都没有留下',
+    },
+  ]);
 
   React.useEffect(
     () => async () => {
@@ -44,24 +56,24 @@ const Member = ({ projectName }) => {
     height: '50vh',
   };
 
-
+  const memberCards = members.map((member) => (
+    <MemberCard key={member.name} {...member} />
+  ));
 
   return (
     <Layout>
-      <Grid item container direction='row' xs={12} sm={4}>
+      <Grid item container direction='column' xs={12} sm={4}>
         <PieChart
           title={'Member from'}
           data={composeData}
           style={pieChartStyle}
         />
-        <MemberTable />
+        {/* <MemberTable /> */}
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
-      
+        {memberCards}
       </Grid>
-      <Grid item container direction='column' xs={12} sm={4}>
-       
-      </Grid>
+      <Grid item container direction='column' xs={12} sm={4}></Grid>
     </Layout>
   );
 };
