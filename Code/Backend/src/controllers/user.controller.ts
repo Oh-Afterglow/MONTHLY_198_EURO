@@ -14,7 +14,7 @@ import {authenticate,TokenService} from '@loopback/authentication';
 import {model, property, repository} from '@loopback/repository';
 import {
   get,
-  getModelSchemaRef,
+  getModelSchemaRef, HttpErrors,
   post,
   requestBody,
   SchemaObject,
@@ -79,7 +79,7 @@ export class UserController {
     @repository(UserExtensionRepository) protected userExtensionRepository: UserExtensionRepository,
   ) {}
 
-  @post('/users/login', {
+  @post('/login', {
     responses: {
       '200': {
         description: 'Token',
@@ -101,14 +101,21 @@ export class UserController {
   async login(
       @requestBody(CredentialsRequestBody) credentials: Credentials,
   ): Promise<{token: string}> {
-    // ensure the user exists, and the password is correct
-    const user = await this.userService.verifyCredentials(credentials);
-    // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile = this.userService.convertToUserProfile(user);
 
-    // create a JSON Web Token based on the user profile
-    const token = await this.jwtService.generateToken(userProfile);
-    return {token};
+    try{
+      // ensure the user exists, and the password is correct
+      const user = await this.userService.verifyCredentials(credentials);
+
+      // convert a User object into a UserProfile object (reduced set of properties)
+      const userProfile = this.userService.convertToUserProfile(user);
+
+      // create a JSON Web Token based on the user profile
+      const token = await this.jwtService.generateToken(userProfile);
+      return {token};
+      }
+    catch (Error){
+      throw new HttpErrors.BadRequest('Login failed');
+    }
   }
 
   @authenticate('jwt')
