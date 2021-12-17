@@ -99,9 +99,10 @@ export class GithubUser extends Entity {
 
   @property({
     type: 'array',
-    itemType: 'number',
+    itemType: 'string',
+    required: true,
   })
-  org_ids?: number[];
+  org_name: string[];
 
 
   constructor(data?: Partial<GithubUser>) {
