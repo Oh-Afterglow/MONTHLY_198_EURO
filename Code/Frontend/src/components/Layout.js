@@ -157,6 +157,7 @@ export default function Layout({ children }) {
             flexGrow: 1,
             height: '100vh',
             overflow: 'auto',
+            paddingLeft: '1rem',
           }}
         >
           <Toolbar />

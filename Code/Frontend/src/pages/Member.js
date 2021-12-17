@@ -8,7 +8,6 @@ import MemberCard from '../components/MemberCard';
 import ProjectCard from '../components/ProjectCard';
 import { Card } from '@mui/material';
 
-
 const Member = ({ projectName }) => {
   // TODO: Replace with some default data
   const [composeData, setComposeData] = React.useState([
@@ -37,14 +36,14 @@ const Member = ({ projectName }) => {
       description: '浙江大学 区块链与数字货币课程',
       major: 'javascript',
       star: '20',
-      lastupdate: 'Updated on 29 Jun 2020'
+      lastupdate: 'Updated on 29 Jun 2020',
     },
     {
       name: 'cCompiler',
       description: '这个人很懒，什么都没有留下',
       major: 'javascript',
       star: '20',
-      lastupdate: 'Updated on 29 Jun 2020'
+      lastupdate: 'Updated on 29 Jun 2020',
     },
   ]);
 
@@ -69,6 +68,7 @@ const Member = ({ projectName }) => {
 
   const pieChartStyle = {
     height: '50vh',
+    marginRight: 0,
   };
 
   const memberCards = members.map((member) => (
@@ -81,14 +81,13 @@ const Member = ({ projectName }) => {
 
   return (
     <Layout>
-      
       <Grid item container direction='column' xs={12} sm={4}>
         <PieChart
           title={'Member from'}
           data={composeData}
           style={pieChartStyle}
         />
-        <Card style={{marginLeft:"1rem",marginRight:"1rem"}}>
+        <Card>
           <MemberTable />
         </Card>
       </Grid>
@@ -97,7 +96,6 @@ const Member = ({ projectName }) => {
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
         {projectCards}
-
       </Grid>
     </Layout>
   );

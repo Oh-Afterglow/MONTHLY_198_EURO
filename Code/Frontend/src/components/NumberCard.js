@@ -64,7 +64,7 @@ export default function NumberCard({ projectName }) {
 
   const styleCard = {
     padding: '1rem',
-    margin: '1rem',
+    margin: '1rem 0 1rem',
     display: 'flex',
     alignItems: 'center',
   };

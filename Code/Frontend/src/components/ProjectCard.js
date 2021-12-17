@@ -12,7 +12,7 @@ const ProjectCard = ({ name,  description ,major,star,lastupdate}) => {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     padding: '1rem 2rem 0 2rem',
-    marginTop: '1rem',
+    margin: '1rem 1rem 0 0',
     minHeight: '8rem',
   };
 

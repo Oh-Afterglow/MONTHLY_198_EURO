@@ -303,7 +303,7 @@ const Dashboard = ({ projectName }) => {
         />
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
-        <Card style={{marginTop:"1rem",marginRight:"1rem"}}>
+        <Card style={{ margin: '1rem 1rem 1rem 0' }}>
           <ProjectTable />
         </Card>
       </Grid>
