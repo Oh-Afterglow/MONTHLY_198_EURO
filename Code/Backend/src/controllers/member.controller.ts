@@ -35,6 +35,27 @@ const MEMBER_COMPOSE: ResponseObject = {
   }
 }
 
+const MEMBER_PROJ: ResponseObject = {
+  description: 'All projects of a member',
+  content: {
+    'application/json': {
+      schema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            name: {type: "string"},
+            description: {type: "string"},
+            major: {type: "string"},
+            stars: {type: "number"},
+            lastUpdate: {type: "string"}
+          }
+        }
+      }
+    }
+  }
+}
+
 export class MemberController {
   constructor(
     @repository(GithubUserRepository)
@@ -114,6 +135,32 @@ export class MemberController {
     return result;
   }
 
+  @authenticate('jwt')
+  @get('/member/projects')
+  @response(200, MEMBER_COMPOSE)
+  async memberProject(
+      @param.query.string('memberName') memberName: string,
+  ): Promise<{
+    name: string,
+    description: string,
+    major: string,
+    stars: number,
+    lastUpdate: string
+  }[]>{
+    let result = [];
+    let member = await this.githubUserRepository.findOne({where: {login_name: memberName}, fields: ["id"]});
+    let repos = await this.projRepoRepository.find({where: {owner_id: member?.id}, fields: ["proj_name", "updated_at", "description", "star_num", "language"]});
+    for (const repo of repos) {
+      result.push({
+        name: repo.proj_name,
+        description: <string>repo.description,
+        major: <string>repo.language,
+        stars: repo.star_num,
+        lastUpdate: repo.updated_at,
+      });
+    }
+    return result;
+  }
 
 
   // @post('/member')
