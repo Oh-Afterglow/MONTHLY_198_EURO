@@ -21,12 +21,14 @@ import {
 GithubUser,
 } from '../models';
 import {ProjRepoRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ReposPrSendersController {
   constructor(
     @repository(ProjRepoRepository) protected projRepoRepository: ProjRepoRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/repos/{id}/pr-senders', {
     responses: {
       '200': {

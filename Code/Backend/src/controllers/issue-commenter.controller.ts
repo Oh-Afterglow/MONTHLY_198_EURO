@@ -21,12 +21,14 @@ import {
 GithubUser,
 } from '../models';
 import {IssueRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class IssueCommenterController {
   constructor(
     @repository(IssueRepository) protected issueRepository: IssueRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/issues/{id}/commenters', {
     responses: {
       '200': {
