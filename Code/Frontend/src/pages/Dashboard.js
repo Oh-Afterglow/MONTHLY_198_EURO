@@ -10,6 +10,8 @@ import RadioGroup from '@mui/material/RadioGroup';
 import ProjectTable from '../components/ProjectTable';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Card } from '@mui/material';
+import ChartSwitcher from '../components/ChartSwitcher';
+import TagRankChart from '../components/TagRankChart';
 
 const Dashboard = ({ projectName }) => {
   // TODO: Replace with some default data
@@ -274,13 +276,27 @@ const Dashboard = ({ projectName }) => {
           <FormControlLabel value='2' control={<Radio />} label='halfyear' />
         </RadioGroup>
 
-        <BarChart
-          title={'Commits'}
-          mode={choosemode}
-          xname={'Time'}
-          yname={'Commit'}
-          xvalue={commit[choosemode].value}
-          style={barChartStyle}
+        <ChartSwitcher
+          chart0={
+            <BarChart
+              title={'Commits'}
+              mode={choosemode}
+              xname={'Time'}
+              yname={'Commit'}
+              xvalue={commit[choosemode].value}
+              style={barChartStyle}
+            />
+          }
+          chart1={
+            <TagRankChart
+              data={[
+                { name: 'log4j2', value: 10 },
+                { name: 'server', value: 15 },
+                { name: 'spring', value: 20 },
+              ]}
+              style={barChartStyle}
+            />
+          }
         />
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>

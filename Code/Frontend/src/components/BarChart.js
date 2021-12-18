@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
 import { Charts } from '@jiaminghi/data-view-react';
 
 export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
@@ -183,11 +183,11 @@ export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
 
   return (
     <Grid item>
-      <Card style={{ ...style, ...mnp }}>
+      <Box style={{ ...style, ...mnp }}>
         {mode == '0' ? <Charts option={option1} height='100%' /> : <div></div>}
         {mode == '1' ? <Charts option={option2} height='100%' /> : <div></div>}
         {mode == '2' ? <Charts option={option3} height='100%' /> : <div></div>}
-      </Card>
+      </Box>
     </Grid>
   );
 }
