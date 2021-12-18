@@ -90,12 +90,32 @@ const Member = ({ projectName }) => {
     // TODO: filter member activities
   }, [selectedMember]);
 
+  let UsercardStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: '1rem 2rem 0 2rem',
+    marginTop: '1rem',
+    minHeight: '6rem',
+    border:'0px solid red'
+  };
+
+  const ProjectcardStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: '1rem 2rem 0 2rem',
+    margin: '1rem 1rem 0 0',
+    minHeight: '8rem',
+  };
+
   const memberCards = members.map((member, id) => (
     <>
       <MemberCard
         key={member.name}
         data={{ ...member, activities }}
         showActivities={true}
+        cardStyle={UsercardStyle}
         onClick={() => setSelectedMember(selectedMember === id ? -1 : id)}
       />
       {selectedMember === id && <ActivityList data={activities} />}
@@ -103,7 +123,7 @@ const Member = ({ projectName }) => {
   ));
 
   const projectCards = projects.map((project) => (
-    <ProjectCard key={project.name} data={project} />
+    <ProjectCard key={project.name} data={project} cardStyle={ProjectcardStyle}/>
   ));
 
   return (

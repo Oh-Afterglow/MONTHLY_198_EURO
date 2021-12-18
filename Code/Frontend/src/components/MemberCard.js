@@ -4,17 +4,8 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import ActivityList from './ActivityList';
 
-const MemberCard = ({ data, onClick }) => {
+const MemberCard = ({ data, onClick ,cardStyle}) => {
   const { name, avatar, description } = data;
-
-  const cardStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    padding: '1rem 2rem 0 2rem',
-    marginTop: '1rem',
-    minHeight: '6rem',
-  };
 
   const avatarStyle = {
     maxWidth: '15%',
@@ -22,8 +13,9 @@ const MemberCard = ({ data, onClick }) => {
     marginRight: '1rem',
   };
 
+
   return (
-    <Card style={cardStyle} onClick={onClick}>
+    <Card variant="outlined" style={cardStyle} onClick={onClick} >
       <Avatar alt={avatar} src={avatar} style={avatarStyle} />
       <div>
         <Typography variant='h5'>{name}</Typography>
