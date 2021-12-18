@@ -10,6 +10,7 @@ const ChartSwitcher = ({ chart0, chart1 }) => {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    margin: '1rem 0 1rem'
   };
 
   return (

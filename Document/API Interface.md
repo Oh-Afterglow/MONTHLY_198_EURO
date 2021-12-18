@@ -49,8 +49,8 @@ type response = { commit: number; issue: number; pullRequest: number };
 const sample: response = { commit: 100, issue: 200, pullRequest: 300 };
 ```
 
-- /project/commit /project/issue /project/pr GET
-- 按照指定结构返回 commit, issue, pr 的数量，对于issue与pr，需要返回两个下面描述的数据结构，首先是已解决的pr与issue，之后则是未解决的数量，如在某个月中提出10个issue，被解决了6个，则在第一个数据结构中返回6，第二个中返回4。(结构在下面详细描述)
+- /project/commit /project/issue /project/pr /project/issuewait/project/prwait  GET
+- 按照指定结构返回 commit, issue, pr 的数量，对于issue与pr，/issue返回的是已解决的数量，/issuewait返回的是未解决的数量，pr同理(结构在下面详细描述)
 
 ```ts
 type request = { projectName: string };
@@ -203,3 +203,16 @@ const sample: response = [
   },
 ];
 ```
+
+- /member/issuesolve /member/prsolve  GET
+- 获取Pr与issue解决情况
+
+```
+type request = { projectName: string };
+type response = [];
+// 返回结构: 一个数组, 每一项代表在该段时间内解决的数量，目前设计为：周，月，半年，年，未解决
+const sample: response = [
+  10,20,30,40,20
+];
+```
+

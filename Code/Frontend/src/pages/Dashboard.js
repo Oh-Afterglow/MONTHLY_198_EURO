@@ -11,6 +11,7 @@ import ProjectTable from '../components/ProjectTable';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Card } from '@mui/material';
 import ChartSwitcher from '../components/ChartSwitcher';
+import SolvedurationChart from '../components/SolvedurationChart';
 import TagRankChart from '../components/TagRankChart';
 
 const Dashboard = ({ projectName }) => {
@@ -335,6 +336,14 @@ const Dashboard = ({ projectName }) => {
     },
   ]);
 
+  const [IssueSolveData, setIssueSolveData] = React.useState([
+      10,20,30,40,20
+  ]);
+
+  const [PrSolveData, setPrSolveData] = React.useState([
+      10,20,30,40,20
+  ]);
+
   React.useEffect(
     () => async () => {
       try {
@@ -388,6 +397,66 @@ const Dashboard = ({ projectName }) => {
         });
         if (data instanceof Array) {
           setpr(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    () => async () => {
+      try {
+        const data = await request.get('/project/issuewait', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          issuedifference(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    () => async () => {
+      try {
+        const data = await request.get('/project/prwait', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          prdifference(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    () => async () => {
+      try {
+        const data = await request.get('/project/issuesolve', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setIssueSolveData(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    () => async () => {
+      try {
+        const data = await request.get('/project/prsolve', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setPrSolveData(data);
         } else {
           throw new Error('Invalid data');
         }
@@ -465,25 +534,51 @@ const Dashboard = ({ projectName }) => {
         />
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
-        <BarChart
-          title={'Issue'}
-          mode={choosemode}
-          xname={'Time'}
-          yname={'Issue'}
-          xvalue={issue[choosemode].value}
-          xdifference={issuedifference[choosemode].value}
-          style={barChartStyle}
+      <ChartSwitcher
+          chart0={
+            <BarChart
+              title={'Issue'}
+              mode={choosemode}
+              xname={'Time'}
+              yname={'Issue'}
+              xvalue={issue[choosemode].value}
+              xdifference={issuedifference[choosemode].value}
+              style={barChartStyle}
+            />
+          }
+          chart1={
+            <SolvedurationChart
+              title={'Duration'}
+              xname={'Time'}
+              yname={'Mount'}
+              value={IssueSolveData}
+              style={barChartStyle}
+            />
+          }
         />
-
-        <BarChart
-          title={'Pr'}
-          mode={choosemode}
-          xname={'Time'}
-          yname={'Pr'}
-          xvalue={pr[choosemode].value}
-          xdifference={prdifference[choosemode].value}
-          style={barChartStyle}
+        <ChartSwitcher
+          chart0={
+            <BarChart
+              title={'Pr'}
+              mode={choosemode}
+              xname={'Time'}
+              yname={'Pr'}
+              xvalue={pr[choosemode].value}
+              xdifference={prdifference[choosemode].value}
+              style={barChartStyle}
+            />
+          }
+          chart1={
+            <SolvedurationChart
+              title={'Duration'}
+              xname={'Time'}
+              yname={'Mount'}
+              value={PrSolveData}
+              style={barChartStyle}
+            />
+          }
         />
+        
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
         <Card style={{ margin: '1rem 1rem 1rem 0' }}>
