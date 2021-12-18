@@ -15,6 +15,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     yAxis: {
       name: yname,
       data: 'value',
+      min : 0
     },
     series: [
       {
@@ -50,6 +51,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     yAxis: {
       name: yname,
       data: 'value',
+      min : 0
     },
     series: [
       {
@@ -193,6 +195,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     yAxis: {
       name: yname,
       data: 'value',
+      min : 0
     },
     series: [
       {
