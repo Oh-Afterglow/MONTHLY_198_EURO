@@ -36,7 +36,7 @@ export class Commit extends Entity {
     type: 'date',
     required: true,
   })
-  time: string;
+  updated_at: string; //the time of author
 
   @property({
     type: 'string',

@@ -1,174 +1,314 @@
-import * as React from 'react';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from '../components/listItems';
+import Layout from '../components/Layout';
+import NumberCard from '../components/NumberCard';
+import PieChart from '../components/PieChart';
+import BarChart from '../components/BarChart';
+import request from '../utils/request';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import ProjectTable from '../components/ProjectTable';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { Card } from '@mui/material';
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant='body2'
-      color='text.secondary'
-      align='center'
-      {...props}
-    >
-      {'Copyright © '}
-      <Link color='inherit' href='https://mui.com/'>
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+const Dashboard = ({ projectName }) => {
+  // TODO: Replace with some default data
+  const [composeData, setComposeData] = React.useState([
+    { name: 'Text', value: 100 },
+    { name: 'Image', value: 200 },
+  ]);
+
+  const [choosemode, setchoosemode] = useState(0);
+  //为了降低代码量，这里使用的格式比较蠢，想的是后端把这里都返回过来，然后改图表粒度的时候就可以简单点
+  const [commit, setcommit] = React.useState([
+    {
+      name: '0',
+      value: [
+        //只有第一行的value有用,别的随意
+        {
+          name: 'X',
+          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        },
+        { name: 'mon', value: [10, 20, 30, 40, 50, 60, 70] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+    {
+      name: '1',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一周
+        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+        { name: '1', value: [10, 20, 30, 40] },
+        { name: '2', value: [60, 20, 30, 40] },
+        { name: '3', value: [50, 20, 30, 40] },
+        { name: '4', value: [30, 20, 20, 40] },
+        { name: '5', value: [30, 20, 30, 40] },
+        { name: '6', value: [30, 20, 20, 40] },
+        { name: '7', value: [30, 20, 30, 40] },
+      ],
+    },
+    {
+      name: '2',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一月
+        {
+          name: 'X',
+          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
+        },
+        { name: '1', value: [10, 20, 30, 40, 50, 60] },
+        { name: '2', value: [10, 20, 30, 40, 50, 60] },
+        { name: '3', value: [10, 20, 30, 40, 50, 60] },
+        { name: '4', value: [10, 20, 30, 40, 50, 60] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+  ]);
+
+  const [issue, setissue] = React.useState([
+    {
+      name: '0',
+      value: [
+        //只有第一行的value有用,别的随意
+        {
+          name: 'X',
+          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        },
+        { name: 'mon', value: [10, 10, 50, 40, 50, 60, 70] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+    {
+      name: '1',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一周
+        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+        { name: '1', value: [10, 20, 30, 40] },
+        { name: '2', value: [60, 20, 30, 40] },
+        { name: '3', value: [50, 20, 30, 40] },
+        { name: '4', value: [30, 20, 20, 40] },
+        { name: '5', value: [30, 20, 30, 40] },
+        { name: '6', value: [30, 20, 20, 40] },
+        { name: '7', value: [30, 20, 30, 40] },
+      ],
+    },
+    {
+      name: '2',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一月
+        {
+          name: 'X',
+          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
+        },
+        { name: '1', value: [10, 20, 30, 40, 50, 60] },
+        { name: '2', value: [10, 20, 30, 40, 50, 60] },
+        { name: '3', value: [10, 20, 30, 40, 50, 60] },
+        { name: '4', value: [10, 20, 30, 40, 50, 60] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+  ]);
+
+  const [pr, setpr] = React.useState([
+    {
+      name: '0',
+      value: [
+        //只有第一行的value有用,别的随意
+        {
+          name: 'X',
+          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        },
+        { name: 'mon', value: [60, 30, 30, 40, 50, 60, 70] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+    {
+      name: '1',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一周
+        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+        { name: '1', value: [10, 20, 30, 40] },
+        { name: '2', value: [60, 20, 30, 40] },
+        { name: '3', value: [50, 20, 30, 40] },
+        { name: '4', value: [30, 20, 20, 40] },
+        { name: '5', value: [30, 20, 30, 40] },
+        { name: '6', value: [30, 20, 20, 40] },
+        { name: '7', value: [30, 20, 30, 40] },
+      ],
+    },
+    {
+      name: '2',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一月
+        {
+          name: 'X',
+          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
+        },
+        { name: '1', value: [10, 20, 30, 40, 50, 60] },
+        { name: '2', value: [10, 20, 30, 40, 50, 60] },
+        { name: '3', value: [10, 20, 30, 40, 50, 60] },
+        { name: '4', value: [10, 20, 30, 40, 50, 60] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+  ]);
+
+  React.useEffect(
+    () => async () => {
+      try {
+        const data = await request.get('/project/compose', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setComposeData(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    () => async () => {
+      try {
+        const data = await request.get('/project/commit', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setcommit(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    () => async () => {
+      try {
+        const data = await request.get('/project/issue', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setissue(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    () => async () => {
+      try {
+        const data = await request.get('/project/pr', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setpr(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    },
+    []
   );
-}
 
-const drawerWidth = 240;
+  const pieChartStyle = {
+    height: '50vh',
+  };
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
+  const barChartStyle = {
+    height: '70vh',
+  };
 
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-  '& .MuiDrawer-paper': {
-    position: 'relative',
-    whiteSpace: 'nowrap',
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    boxSizing: 'border-box',
-    ...(!open && {
-      overflowX: 'hidden',
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      width: theme.spacing(7),
-      [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9),
-      },
-    }),
-  },
-}));
-
-const mdTheme = createTheme();
-
-function DashboardContent() {
-  const [open, setOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
+  let handlechange = (event) => {
+    setchoosemode((choosemode) => event.target.value);
   };
 
   return (
-    <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <AppBar position='absolute' open={open}>
-          <Toolbar
-            sx={{
-              pr: '24px', // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge='start'
-              color='inherit'
-              aria-label='open drawer'
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component='h1'
-              variant='h6'
-              color='inherit'
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Dashboard
-            </Typography>
-            <IconButton color='inherit'>
-              <Badge badgeContent={4} color='secondary'>
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant='permanent' open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List>{mainListItems}</List>
-          <Divider />
-          <List>{secondaryListItems}</List>
-        </Drawer>
-        <Box
-          component='main'
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <Toolbar />
-          <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
-            <Copyright sx={{ pt: 4 }} />
-          </Container>
-        </Box>
-      </Box>
-    </ThemeProvider>
-  );
-}
+    <Layout>
+      <Grid item container direction='column' xs={12} sm={4}>
+        <NumberCard />
+        <PieChart
+          title={'Project Composition'}
+          data={composeData}
+          style={pieChartStyle}
+        />
 
-export default function Dashboard() {
-  return <DashboardContent />;
-}
+        <RadioGroup
+          row
+          aria-label='time'
+          name='row-radio-buttons-group'
+          value={choosemode}
+          onChange={handlechange}
+        >
+          <FormControlLabel value='0' control={<Radio />} label='week' />
+          <FormControlLabel value='1' control={<Radio />} label='month' />
+          <FormControlLabel value='2' control={<Radio />} label='halfyear' />
+        </RadioGroup>
+
+        <BarChart
+          title={'Commits'}
+          mode={choosemode}
+          xname={'Time'}
+          yname={'Commit'}
+          xvalue={commit[choosemode].value}
+          style={barChartStyle}
+        />
+      </Grid>
+      <Grid item container direction='column' xs={12} sm={4}>
+        <BarChart
+          title={'Issue'}
+          mode={choosemode}
+          xname={'Time'}
+          yname={'Issue'}
+          xvalue={issue[choosemode].value}
+          style={barChartStyle}
+        />
+
+        <BarChart
+          title={'Pr'}
+          mode={choosemode}
+          xname={'Time'}
+          yname={'Pr'}
+          xvalue={pr[choosemode].value}
+          style={barChartStyle}
+        />
+      </Grid>
+      <Grid item container direction='column' xs={12} sm={4}>
+        <Card style={{ margin: '1rem 1rem 1rem 0' }}>
+          <ProjectTable />
+        </Card>
+      </Grid>
+    </Layout>
+  );
+};
+
+export default Dashboard;

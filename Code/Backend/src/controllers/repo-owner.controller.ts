@@ -11,6 +11,7 @@ import {
   GithubUser,
 } from '../models';
 import {ProjRepoRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class RepoOwnerController {
   constructor(
@@ -18,6 +19,7 @@ export class RepoOwnerController {
     public projRepoRepository: ProjRepoRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/repos/{id}/owner', {
     responses: {
       '200': {
