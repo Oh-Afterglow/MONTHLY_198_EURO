@@ -12,7 +12,7 @@ export class UpdateController {
     protected userExtensionRepository: UserExtensionRepository,
   ) {}
 
-  // @authenticate('jwt')
+  @authenticate('jwt')
   @get('/update', {
     responses: {
       '200': {
