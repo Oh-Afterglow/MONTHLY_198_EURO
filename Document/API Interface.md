@@ -207,7 +207,7 @@ const sample: response = [
 - /member/issuesolve /member/prsolve  GET
 - 获取Pr与issue解决情况
 
-```
+```ts
 type request = { projectName: string };
 type response = [];
 // 返回结构: 一个数组, 每一项代表在该段时间内解决的数量，目前设计为：周，月，半年，年，未解决

@@ -17,7 +17,7 @@ import {
   requestBody,
   response, ResponseObject, OperationObject, HttpErrors,
 } from '@loopback/rest';
-import {ProjRepo} from '../models';
+import {Issue, IssueRelations, ProjRepo, Pull, PullRelations} from '../models';
 import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullRepository, CommitRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import {inject} from "@loopback/core";
@@ -97,6 +97,18 @@ const PROJECT_CIP: ResponseObject = {
       },
     },
   },
+}
+
+const IP_SOLVE: ResponseObject = {
+  description: 'The number of issues / PRs solved per week / month / half year / year',
+  content: {
+    'application/json': {
+      schema: {
+        type: "array",
+        items: {type: "number"},
+      }
+    }
+  }
 }
 
 export class ProjectInfoController {
@@ -211,8 +223,8 @@ export class ProjectInfoController {
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
-    let allIssues = await this.issueRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at"]});
-    return timeFilter(allIssues);
+    let closedIssues = await this.issueRepository.find({where: {repos_id: repo?.id, state: "closed"}, fields: ["updated_at"]});
+    return timeFilter(closedIssues);
   }
 
   @authenticate('jwt')
@@ -235,8 +247,104 @@ export class ProjectInfoController {
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
-    let allPRs = await this.pullRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at"]});
-    return timeFilter(allPRs);
+    let closedPRs = await this.pullRepository.find({where: {repos_id: repo?.id, state: "closed"}, fields: ["updated_at"]});
+    return timeFilter(closedPRs);
+  }
+
+  @authenticate('jwt')
+  @get('/project/issuewait')
+  @response(200, PROJECT_CIP)
+  async projectIssueWait(
+      @param.query.string('projectName') projectName: string,
+      @inject(SecurityBindings.USER)
+          currentUserProfile: UserProfile,
+  ): Promise<{
+    name: string,
+    value: { name: string, value: number[] }[],
+  }[]>{
+    let currentUserEmail = currentUserProfile["email"];
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
+      throw new HttpErrors.NotFound('Repository not found.');
+    }
+    let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
+    let openIssues = await this.issueRepository.find({where: {repos_id: repo?.id, state: "open"}, fields: ["updated_at"]});
+    return timeFilter(openIssues);
+  }
+
+  @authenticate('jwt')
+  @get('/project/prwait')
+  @response(200, PROJECT_CIP)
+  async projectPRWait(
+      @param.query.string('projectName') projectName: string,
+      @inject(SecurityBindings.USER)
+          currentUserProfile: UserProfile,
+  ): Promise<{
+    name: string,
+    value: { name: string, value: number[] }[],
+  }[]>{
+    let currentUserEmail = currentUserProfile["email"];
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
+      throw new HttpErrors.NotFound('Repository not found.');
+    }
+    let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
+    let openPRs = await this.pullRepository.find({where: {repos_id: repo?.id, state: "open"}, fields: ["updated_at"]});
+    return timeFilter(openPRs);
+  }
+
+  @authenticate('jwt')
+  @get('/project/issuesolve')
+  @response(200, IP_SOLVE)
+  async issueSolveCount(
+      @param.query.string('projectName') projectName: string,
+      @inject(SecurityBindings.USER)
+          currentUserProfile: UserProfile,
+  ): Promise<number[]>{
+    let currentUserEmail = currentUserProfile["email"];
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
+      throw new HttpErrors.NotFound('Repository not found.');
+    }
+    let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
+    let solvedIssues = await this.issueRepository.find({where: {repos_id: repo?.id, state: 'closed'}, fields: ["closed_at"]});
+    let result = timeFilterV2(solvedIssues);
+    let unsolvedCount = await this.issueRepository.count({repos_id: repo?.id, state: 'open'});
+    result[4] = unsolvedCount.count;
+    return result;
+  }
+
+  @authenticate('jwt')
+  @get('/project/prsolve')
+  @response(200, IP_SOLVE)
+  async prSolveCount(
+      @param.query.string('projectName') projectName: string,
+      @inject(SecurityBindings.USER)
+          currentUserProfile: UserProfile,
+  ): Promise<number[]>{
+    let currentUserEmail = currentUserProfile["email"];
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
+      throw new HttpErrors.NotFound('Repository not found.');
+    }
+    let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
+    let solvedPR = await this.pullRepository.find({where: {repos_id: repo?.id, state: 'closed'}, fields: ["closed_at"]});
+    let result = timeFilterV2(solvedPR);
+    let unsolvedCount = await this.pullRepository.count({repos_id: repo?.id, state: 'open'});
+    result[4] = unsolvedCount.count;
+    return result;
   }
 
   // @post('/project')
@@ -402,7 +510,7 @@ function timeFilter(all: {updated_at: string}[]): {
   for(let i = 1; i <= 24; i++){
     weeksAgo.push(new Date(today.getTime() - 7 * i * (1000 * 60 * 60 * 24)));//today is counted in the week)
     weeksAgo[i].setHours(0, 0, 0, 0);
-  };
+  }
 
   for(let i = 0; i < all.length; i++){
     let commitTime = new Date(all[i].updated_at);
@@ -417,6 +525,34 @@ function timeFilter(all: {updated_at: string}[]): {
             let index = commitTime.getDay() - 1;
             if(index == -1) index = 6; //Sunday
             result[0].value[0].value[index]++;
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+function timeFilterV2(all: (Issue & IssueRelations | Pull & PullRelations)[]): number[]{
+  let result = [0, 0, 0, 0, 0];
+  let today = new Date();
+  today.setTime(today.getTime() + 1000 * 60 * 60 * 24);
+  today.setHours(0, 0, 0, 0);
+  let weekAgo = new Date(today.getTime() - 7 * 1000 * 60 * 60 * 24);
+  let monthAgo = new Date(today.getTime() - 28 * 1000 * 60 * 60 * 24);//28 days ago
+  let halfYearAgo = new Date(today.getTime() - 4 * 7 * 6 * 1000 * 60 * 60 * 24);//6 months, regard 4 weeks as a month
+  let yearAgo = new Date(today.getTime() - 365 * 1000 * 60 * 60 * 24);
+
+  for (const contrib of all) {
+    let time = new Date(<string>contrib.closed_at);
+    if(time >= yearAgo){
+      result[3]++;
+      if(time >= halfYearAgo){
+        result[2]++;
+        if(time >= monthAgo){
+          result[1]++;
+          if(time >= weekAgo){
+            result[0]++;
           }
         }
       }
