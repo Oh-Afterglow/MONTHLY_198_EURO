@@ -120,7 +120,7 @@ export class MemberController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('Repository not found.');
     }
     let result = [{
       name: 'individual',
@@ -128,6 +128,9 @@ export class MemberController {
     }]
 
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
     let prSender = await this.projRepoRepository.pr_sender(<number>repo?.id).find({fields: ["org_name", "id"]});
     let issueSender = await this.projRepoRepository.issue_adder(<number>repo?.id).find({fields: ["org_name", "id"]});
     let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["author_id", "author_email"]});
@@ -141,6 +144,9 @@ export class MemberController {
     for (let i = 0; i < allCommits.length; i++){
       if(allCommits[i].author_id != undefined){
         let committer = await this.githubUserRepository.findById(<number>allCommits[i].author_id, {fields: ["org_name", "id"]});
+        if(typeof committer === null){
+          throw new HttpErrors.InternalServerError('Try after updating the data');
+        }
         if(!memberList.includes(<GithubUser>committer)){
             memberList.push(<GithubUser>committer);
         }
@@ -190,6 +196,9 @@ export class MemberController {
   }[]>{
     let result = [];
     let member = await this.githubUserRepository.findOne({where: {login_name: memberName}, fields: ["id"]});
+    if(typeof member === null){
+      throw new HttpErrors.NotFound('Member not found. Is this name a login name of GitHub user?');
+    }
     let repos = await this.projRepoRepository.find({where: {owner_id: member?.id}, fields: ["proj_name", "updated_at", "description", "star_num", "language"]});
     for (const repo of repos) {
       result.push({
@@ -214,9 +223,12 @@ export class MemberController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('Repository not found.');
     }
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
     let prSenders = await this.projRepoRepository.pr_sender(<number>repo?.id).find({fields: ["login_name", "avatar_url", "bio"]});
     let issueSenders = await this.projRepoRepository.issue_adder(<number>repo?.id).find({fields: ["login_name", "avatar_url", "bio"]});
     let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["author_id", "author_email", "author_name"]});
@@ -227,7 +239,7 @@ export class MemberController {
         avatar: prSender.avatar_url,
         description: prSender.bio,
       };
-      if(member.description.length === 0) member.description = '我爱万志远';
+      if(member.description.length === 0) member.description = '我爱万志远';//placeholder
       if(!result.includes(member)){
         result.push(member);
       }
@@ -246,6 +258,9 @@ export class MemberController {
     for (const commit of allCommits) {
       if(commit.author_id != undefined){
         let committer = await this.githubUserRepository.findById(commit.author_id, {fields: ["login_name", "avatar_url", "bio"]});
+        if(typeof committer === null){
+          throw new HttpErrors.InternalServerError('Try after updating data.');
+        }
         let member = {
           name: committer.login_name,
           avatar: committer.avatar_url,
@@ -271,15 +286,21 @@ export class MemberController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('Repository not found.');
     }
     let result: {time: string, event: string, memberName: string}[] = [];
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
     let allCommit = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at", "author_id", "author_name"]});
     for (const commit of allCommit) {
       let name: string;
       if(commit.author_id != undefined){
         let member = await this.githubUserRepository.findById(commit.author_id, {fields: ["login_name"]});
+        if(typeof member === null){
+          throw new HttpErrors.InternalServerError('Try after updating data.');
+        }
         name = member.login_name;
       }
       else name = commit.author_name;
@@ -344,11 +365,6 @@ export class MemberController {
     }
     return result.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
   }
-
-  // @authenticate('jwt')
-  // @get('/member/events')
-  // @response(200)
-  // async memberEvents():
 
   // @post('/member')
   // @response(200, {

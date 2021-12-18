@@ -23,17 +23,6 @@ import {authenticate} from "@loopback/authentication";
 import {inject} from "@loopback/core";
 import {SecurityBindings, UserProfile} from "@loopback/security";
 
-// const AUTH_FAILURE_SPEC = {
-//   description: 'Permission denied message',
-//   content: {
-//     'application/json': {
-//       schema: {
-//         message: {type: 'string'},
-//       }
-//     }
-//   }
-// };
-
 const PROJECT_COMPOSE: ResponseObject = {
   description: 'The composition of a project',
   content: {
@@ -135,9 +124,12 @@ export class ProjectInfoController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('Repository not found.');
     }
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ['language_stat']});
+    if(repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');//The repo is in the list but its data is not in database
+    }
     let result = [];
     for(let lang in repo?.language_stat){
       if (repo) {
@@ -158,9 +150,12 @@ export class ProjectInfoController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('Repository not found.');
     }
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
     let commitCount = await this.commitRepository.count({repos_id: repo?.id});
     let issueCount = await this.issueRepository.count({repos_id: repo?.id});
     let prCount = await this.pullRepository.count({repos_id: repo?.id});
@@ -185,9 +180,12 @@ export class ProjectInfoController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('Repository not found.');
     }
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
     let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at"]});
 
     return timeFilter(allCommits);
@@ -207,9 +205,12 @@ export class ProjectInfoController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('You don\'t have the permission to view this repo.');
     }
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
     let allIssues = await this.issueRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at"]});
     return timeFilter(allIssues);
   }
@@ -228,9 +229,12 @@ export class ProjectInfoController {
     let currentUserEmail = currentUserProfile["email"];
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden('You don\'t have the permission to view this repo.');
+      throw new HttpErrors.NotFound('Repository not found.');
     }
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
     let allPRs = await this.pullRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at"]});
     return timeFilter(allPRs);
   }
