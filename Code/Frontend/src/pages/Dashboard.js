@@ -29,7 +29,7 @@ const Dashboard = ({ projectName }) => {
         //只有第一行的value有用,别的随意
         {
           name: 'X',
-          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+          value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
         },
         { name: 'mon', value: [10, 20, 30, 40, 50, 60, 70] },
         { value: [] },
@@ -74,7 +74,7 @@ const Dashboard = ({ projectName }) => {
     },
   ]);
 
-  const [issue, setissue] = React.useState([
+  const [commitdifference, setcommitdifference] = React.useState([
     {
       name: '0',
       value: [
@@ -82,6 +82,58 @@ const Dashboard = ({ projectName }) => {
         {
           name: 'X',
           value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        },
+        { name: 'mon', value: [0, 0, 0, 0, 0, 0, 0] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+    {
+      name: '1',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一周
+        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+        { name: '1', value: [0, 0, 0, 0] },
+        { name: '2', value: [0, 0, 0, 0] },
+        { name: '3', value: [0, 0, 0, 0] },
+        { name: '4', value: [0, 0, 0, 0] },
+        { name: '5', value: [0, 0, 0, 0] },
+        { name: '6', value: [0, 0, 0, 0] },
+        { name: '7', value: [0, 0, 0, 0] },
+      ],
+    },
+    {
+      name: '2',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一月
+        {
+          name: 'X',
+          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
+        },
+        { name: '1', value: [0, 0, 0, 0, 0, 0] },
+        { name: '2', value: [0, 0, 0, 0, 0, 0] },
+        { name: '3', value: [0, 0, 0, 0, 0, 0] },
+        { name: '4', value: [0, 0, 0, 0, 0, 0] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+  ]);
+  
+  const [issue, setissue] = React.useState([
+    {
+      name: '0',
+      value: [
+        //只有第一行的value有用,别的随意
+        {
+          name: 'X',
+          value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
         },
         { name: 'mon', value: [10, 10, 50, 40, 50, 60, 70] },
         { value: [] },
@@ -126,7 +178,8 @@ const Dashboard = ({ projectName }) => {
     },
   ]);
 
-  const [pr, setpr] = React.useState([
+
+  const [issuedifference, setissuedifference] = React.useState([
     {
       name: '0',
       value: [
@@ -134,6 +187,58 @@ const Dashboard = ({ projectName }) => {
         {
           name: 'X',
           value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        },
+        { name: 'mon', value: [10, 10, 50, 40, 50, 60, 70] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+    {
+      name: '1',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一周
+        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+        { name: '1', value: [0, 10, 10, 10] },
+        { name: '2', value: [10, 10, 10, 10] },
+        { name: '3', value: [10, 10, 10, 10] },
+        { name: '4', value: [10, 10, 10, 10] },
+        { name: '5', value: [10, 10, 10, 10] },
+        { name: '6', value: [10, 10, 10, 10] },
+        { name: '7', value: [10, 10, 10, 10] },
+      ],
+    },
+    {
+      name: '2',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一月
+        {
+          name: 'X',
+          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
+        },
+        { name: '1', value: [0, 0, 0, 10, 10, 10] },
+        { name: '2', value: [0, 0, 0, 10, 10, 10] },
+        { name: '3', value: [0, 0, 0, 10, 10, 10] },
+        { name: '4', value: [0, 0, 0, 10, 10, 10] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+  ]);
+
+  const [pr, setpr] = React.useState([
+    {
+      name: '0',
+      value: [
+        //只有第一行的value有用,别的随意
+        {
+          name: 'X',
+          value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
         },
         { name: 'mon', value: [60, 30, 30, 40, 50, 60, 70] },
         { value: [] },
@@ -171,6 +276,58 @@ const Dashboard = ({ projectName }) => {
         { name: '2', value: [10, 20, 30, 40, 50, 60] },
         { name: '3', value: [10, 20, 30, 40, 50, 60] },
         { name: '4', value: [10, 20, 30, 40, 50, 60] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+  ]);
+
+  const [prdifference, setprdifference] = React.useState([
+    {
+      name: '0',
+      value: [
+        //只有第一行的value有用,别的随意
+        {
+          name: 'X',
+          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        },
+        { name: 'mon', value: [10, 10, 10, 10, 10, 10, 10] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+        { value: [] },
+      ],
+    },
+    {
+      name: '1',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一周
+        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+        { name: '1', value: [10, 10, 10, 10] },
+        { name: '2', value: [10, 10, 10, 10] },
+        { name: '3', value: [10, 10, 10, 10] },
+        { name: '4', value: [10, 10, 10, 10] },
+        { name: '5', value: [10, 10, 10, 10] },
+        { name: '6', value: [10, 10, 10, 10] },
+        { name: '7', value: [10, 10, 10, 10] },
+      ],
+    },
+    {
+      name: '2',
+      value: [
+        //这里的都需要用，具体格式是每一列的数字代表一月
+        {
+          name: 'X',
+          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
+        },
+        { name: '1', value: [10, 10, 10, 10, 10, 10] },
+        { name: '2', value: [10, 10, 10, 10, 10, 10] },
+        { name: '3', value: [10, 10, 10, 10, 10, 10] },
+        { name: '4', value: [10, 10, 10, 10, 10, 10] },
         { value: [] },
         { value: [] },
         { value: [] },
@@ -291,6 +448,7 @@ const Dashboard = ({ projectName }) => {
               xname={'Time'}
               yname={'Commit'}
               xvalue={commit[choosemode].value}
+              xdifference={commitdifference[choosemode].value}
               style={barChartStyle}
             />
           }
@@ -313,6 +471,7 @@ const Dashboard = ({ projectName }) => {
           xname={'Time'}
           yname={'Issue'}
           xvalue={issue[choosemode].value}
+          xdifference={issuedifference[choosemode].value}
           style={barChartStyle}
         />
 
@@ -322,6 +481,7 @@ const Dashboard = ({ projectName }) => {
           xname={'Time'}
           yname={'Pr'}
           xvalue={pr[choosemode].value}
+          xdifference={prdifference[choosemode].value}
           style={barChartStyle}
         />
       </Grid>
