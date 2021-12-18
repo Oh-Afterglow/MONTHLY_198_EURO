@@ -115,6 +115,16 @@ const sample: response = [
 ];
 ```
 
+- /project/commit/tag GET
+- 获取 commit 相关的 tag 的数量列表
+
+```ts
+type request = { projectName: string };
+
+type response = { name: string; value: number }[];
+// 返回结构：一个数组, 每一项包含了 { name: tag名, value: 数量 }
+```
+
 - /member/compose GET
 - 获取社区的人员构成
 
