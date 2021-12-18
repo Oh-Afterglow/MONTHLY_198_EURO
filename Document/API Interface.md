@@ -50,7 +50,7 @@ const sample: response = { commit: 100, issue: 200, pullRequest: 300 };
 ```
 
 - /project/commit /project/issue /project/pr GET
-- 按照指定结构返回 commit, issue, pr 的数量(结构在下面详细描述)
+- 按照指定结构返回 commit, issue, pr 的数量，对于issue与pr，需要返回两个下面描述的数据结构，首先是已解决的pr与issue，之后则是未解决的数量，如在某个月中提出10个issue，被解决了6个，则在第一个数据结构中返回6，第二个中返回4。(结构在下面详细描述)
 
 ```ts
 type request = { projectName: string };
