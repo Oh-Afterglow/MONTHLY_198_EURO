@@ -6,7 +6,10 @@ import Chip from '@mui/material/Chip';
 import StarIcon from '@mui/icons-material/Star';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-const ProjectCard = ({ name,  description ,major,star,lastupdate}) => {
+const ProjectCard = ({ data }) => {
+
+  const { name, description, major, star, lastupdate } = data;
+
   const cardStyle = {
     display: 'flex',
     flexDirection: 'row',

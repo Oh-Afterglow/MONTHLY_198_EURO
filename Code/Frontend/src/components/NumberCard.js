@@ -35,33 +35,7 @@ function SubDigitalDisplay({ name, value }) {
   );
 }
 
-/**
- * @param {{projectName: string}} props
- */
-export default function NumberCard({ projectName }) {
-  const [data, setData] = React.useState({
-    commit: 0,
-    issue: 0,
-    pullRequest: 0,
-  });
-
-  React.useEffect(
-    () =>
-      (async () => {
-        try {
-          /**
-           * @type {{commit: number, issue: number, pullRequest: number}}
-           */
-          const res = await request.get('/project/numbers', { projectName });
-          setData(res);
-        } catch (e) {
-          // TODO: handle error
-          console.error(e);
-        }
-      })(),
-    []
-  );
-
+export default function NumberCard({ data }) {
   const styleCard = {
     padding: '1rem',
     margin: '1rem 0 1rem',
@@ -83,9 +57,9 @@ export default function NumberCard({ projectName }) {
         direction='row'
         divider={<Divider flexItem orientation='vertical' />}
       >
-        <SubDigitalDisplay name='Commits' value={data.commit} />
-        <SubDigitalDisplay name='Issues' value={data.issue} />
-        <SubDigitalDisplay name='Pull Requests' value={data.pullRequest} />
+        <SubDigitalDisplay name='Commits' value={data.commit ?? 0} />
+        <SubDigitalDisplay name='Issues' value={data.issue ?? 0} />
+        <SubDigitalDisplay name='Pull Requests' value={data.pullRequest ?? 0} />
       </Stack>
     </Card>
   );

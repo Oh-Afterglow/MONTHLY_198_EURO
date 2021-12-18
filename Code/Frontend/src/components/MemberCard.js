@@ -3,7 +3,9 @@ import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 
-const MemberCard = ({ name, avatar, description }) => {
+const MemberCard = ({ data }) => {
+  const { name, avatar, description } = data;
+
   const cardStyle = {
     display: 'flex',
     flexDirection: 'row',

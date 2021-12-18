@@ -71,12 +71,19 @@ const Member = ({ projectName }) => {
     marginRight: 0,
   };
 
+  const memberTableData = [
+    { id: 1, time: '2021/11/11', event: 'Development01 join the team' },
+    { id: 2, time: '2021/11/11', event: 'Development01 leave the team' },
+    { id: 3, time: '2021/11/30', event: 'Development03 join the team' },
+    { id: 4, time: '2021/11/11', event: 'Development04 join the team' },
+  ];
+
   const memberCards = members.map((member) => (
-    <MemberCard key={member.name} {...member} />
+    <MemberCard key={member.name} data={member} />
   ));
 
   const projectCards = projects.map((project) => (
-    <ProjectCard key={project.name} {...project} />
+    <ProjectCard key={project.name} data={project} />
   ));
 
   return (
@@ -88,7 +95,7 @@ const Member = ({ projectName }) => {
           style={pieChartStyle}
         />
         <Card>
-          <MemberTable />
+          <MemberTable data={memberTableData} />
         </Card>
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>

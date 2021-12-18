@@ -254,10 +254,17 @@ const Dashboard = ({ projectName }) => {
     setchoosemode((choosemode) => event.target.value);
   };
 
+  const projectTableData = [
+    { id: 1, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
+    { id: 2, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
+    { id: 3, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
+    { id: 4, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
+  ];
+
   return (
     <Layout>
       <Grid item container direction='column' xs={12} sm={4}>
-        <NumberCard />
+        <NumberCard data={{ commit: '10', issue: '23', pullRequest: '244' }} />
         <PieChart
           title={'Project Composition'}
           data={composeData}
@@ -320,7 +327,7 @@ const Dashboard = ({ projectName }) => {
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
         <Card style={{ margin: '1rem 1rem 1rem 0' }}>
-          <ProjectTable />
+          <ProjectTable data={projectTableData} />
         </Card>
       </Grid>
     </Layout>
