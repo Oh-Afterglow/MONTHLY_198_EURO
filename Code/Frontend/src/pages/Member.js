@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Layout from '../components/Layout';
 import PieChart from '../components/PieChart';
@@ -7,6 +7,7 @@ import MemberTable from '../components/MemberTable';
 import MemberCard from '../components/MemberCard';
 import ProjectCard from '../components/ProjectCard';
 import { Card } from '@mui/material';
+import ActivityList from '../components/ActivityList';
 
 const Member = ({ projectName }) => {
   // TODO: Replace with some default data
@@ -78,8 +79,27 @@ const Member = ({ projectName }) => {
     { id: 4, time: '2021/11/11', event: 'Development04 join the team' },
   ];
 
-  const memberCards = members.map((member) => (
-    <MemberCard key={member.name} data={member} />
+  const [selectedMember, setSelectedMember] = useState(-1);
+  const activities = [
+    { time: '2020/11/11', activity: 'make a commit' },
+    { time: '2020/12/31', activity: 'close an issue' },
+  ];
+
+  useEffect(() => {
+    // TODO: fetch member projects
+    // TODO: filter member activities
+  }, [selectedMember]);
+
+  const memberCards = members.map((member, id) => (
+    <>
+      <MemberCard
+        key={member.name}
+        data={{ ...member, activities }}
+        showActivities={true}
+        onClick={() => setSelectedMember(selectedMember === id ? -1 : id)}
+      />
+      {selectedMember === id && <ActivityList data={activities} />}
+    </>
   ));
 
   const projectCards = projects.map((project) => (

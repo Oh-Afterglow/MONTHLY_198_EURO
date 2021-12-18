@@ -2,8 +2,9 @@ import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
+import ActivityList from './ActivityList';
 
-const MemberCard = ({ data }) => {
+const MemberCard = ({ data, onClick }) => {
   const { name, avatar, description } = data;
 
   const cardStyle = {
@@ -22,7 +23,7 @@ const MemberCard = ({ data }) => {
   };
 
   return (
-    <Card style={cardStyle}>
+    <Card style={cardStyle} onClick={onClick}>
       <Avatar alt={avatar} src={avatar} style={avatarStyle} />
       <div>
         <Typography variant='h5'>{name}</Typography>
