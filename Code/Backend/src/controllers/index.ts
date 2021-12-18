@@ -7,3 +7,4 @@ export * from './user.controller';
 export * from './project-info.controller';
 export * from './member.controller';
 export * from './issue-label.controller';
+export * from './update.controller';
