@@ -26,6 +26,10 @@ export class Label extends Entity {
   })
   description?: string;
 
+  @property({
+    type: 'number',
+  })
+  issueId?: number;
 
   constructor(data?: Partial<Label>) {
     super(data);

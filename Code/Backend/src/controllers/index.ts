@@ -6,3 +6,4 @@ export * from './issue-commenter.controller';
 export * from './user.controller';
 export * from './project-info.controller';
 export * from './member.controller';
+export * from './issue-label.controller';

@@ -1,6 +1,7 @@
 import {Entity, model, property, hasMany} from '@loopback/repository';
 import {GithubUser} from './github-user.model';
 import {CommentsIssue} from './comments-issue.model';
+import {Label} from './label.model';
 
 @model()
 export class Issue extends Entity {
@@ -89,6 +90,9 @@ export class Issue extends Entity {
 
   @hasMany(() => GithubUser, {through: {model: () => CommentsIssue, keyFrom: 'issue_id', keyTo: 'commenter_id'}})
   issue_commenter: GithubUser[];
+
+  @hasMany(() => Label)
+  labels: Label[];
 
   constructor(data?: Partial<Issue>) {
     super(data);

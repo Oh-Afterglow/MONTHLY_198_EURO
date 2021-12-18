@@ -18,7 +18,7 @@ import {
   response, ResponseObject, OperationObject, HttpErrors,
 } from '@loopback/rest';
 import {Issue, IssueRelations, ProjRepo, Pull, PullRelations} from '../models';
-import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullRepository, CommitRepository} from '../repositories';
+import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullRepository, CommitRepository, LabelRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import {inject} from "@loopback/core";
 import {SecurityBindings, UserProfile} from "@loopback/security";
@@ -106,6 +106,24 @@ const IP_SOLVE: ResponseObject = {
       schema: {
         type: "array",
         items: {type: "number"},
+      }
+    }
+  }
+}
+
+const ISSUE_TAGS: ResponseObject = {
+  description: 'The number of each tags in issues',
+  content: {
+    'application/json': {
+      schema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            name: {type: "string"},
+            value: {type: "number"},
+          }
+        }
       }
     }
   }
@@ -344,6 +362,46 @@ export class ProjectInfoController {
     let result = timeFilterV2(solvedPR);
     let unsolvedCount = await this.pullRepository.count({repos_id: repo?.id, state: 'open'});
     result[4] = unsolvedCount.count;
+    return result;
+  }
+
+  @authenticate('jwt')
+  @get('/project/issue/tag')
+  @response(200, ISSUE_TAGS)
+  async issueTags(
+      @param.query.string('projectName') projectName: string,
+      @inject(SecurityBindings.USER)
+          currentUserProfile: UserProfile,
+  ): Promise<{name: string, value: number}[]>{
+    let currentUserEmail = currentUserProfile["email"];
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
+      throw new HttpErrors.NotFound('Repository not found.');
+    }
+    let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
+    if(typeof repo === null){
+      throw new HttpErrors.InternalServerError('The repository data is missing.');
+    }
+    let result: {name: string, value: number}[] = [];
+    let allIssues = await this.issueRepository.find({where: {repos_id: repo?.id}, fields: ["labels"]});
+    for (const issue of allIssues) {
+      for(const label of issue.labels){
+        let labelExists = false;
+        for (const savedLabel of result) {
+          if(savedLabel.name === label.name){
+            savedLabel.value++;
+            labelExists = true;
+            break;
+          }
+        }
+        if(!labelExists){
+          result.push({
+            name: label.name,
+            value: 1,
+          });
+        }
+      }
+    }
     return result;
   }
 
