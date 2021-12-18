@@ -43,6 +43,12 @@ export class CommentsIssue extends Entity {
   })
   commenter_id?: number;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  commenter_name: string;
+
   constructor(data?: Partial<CommentsIssue>) {
     super(data);
   }

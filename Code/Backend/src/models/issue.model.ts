@@ -81,6 +81,12 @@ export class Issue extends Entity {
   })
   user_id?: number;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  user_name: string;
+
   @hasMany(() => GithubUser, {through: {model: () => CommentsIssue, keyFrom: 'issue_id', keyTo: 'commenter_id'}})
   issue_commenter: GithubUser[];
 
