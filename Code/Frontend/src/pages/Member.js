@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Layout from '../components/Layout';
 import PieChart from '../components/PieChart';
@@ -7,6 +7,7 @@ import MemberTable from '../components/MemberTable';
 import MemberCard from '../components/MemberCard';
 import ProjectCard from '../components/ProjectCard';
 import { Card } from '@mui/material';
+import ActivityList from '../components/ActivityList';
 
 const Member = ({ projectName }) => {
   // TODO: Replace with some default data
@@ -71,12 +72,58 @@ const Member = ({ projectName }) => {
     marginRight: 0,
   };
 
-  const memberCards = members.map((member) => (
-    <MemberCard key={member.name} {...member} />
+  const memberTableData = [
+    { id: 1, time: '2021/11/11', event: 'Development01 join the team' },
+    { id: 2, time: '2021/11/11', event: 'Development01 leave the team' },
+    { id: 3, time: '2021/11/30', event: 'Development03 join the team' },
+    { id: 4, time: '2021/11/11', event: 'Development04 join the team' },
+  ];
+
+  const [selectedMember, setSelectedMember] = useState(-1);
+  const activities = [
+    { time: '2020/11/11', activity: 'make a commit' },
+    { time: '2020/12/31', activity: 'close an issue' },
+  ];
+
+  useEffect(() => {
+    // TODO: fetch member projects
+    // TODO: filter member activities
+  }, [selectedMember]);
+
+  let UsercardStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: '1rem 2rem 0 2rem',
+    marginTop: '1rem',
+    minHeight: '6rem',
+    border:'0px solid red'
+  };
+
+  const ProjectcardStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: '1rem 2rem 0 2rem',
+    margin: '1rem 1rem 0 0',
+    minHeight: '8rem',
+  };
+
+  const memberCards = members.map((member, id) => (
+    <>
+      <MemberCard
+        key={member.name}
+        data={{ ...member, activities }}
+        showActivities={true}
+        cardStyle={UsercardStyle}
+        onClick={() => setSelectedMember(selectedMember === id ? -1 : id)}
+      />
+      {selectedMember === id && <ActivityList data={activities} />}
+    </>
   ));
 
   const projectCards = projects.map((project) => (
-    <ProjectCard key={project.name} {...project} />
+    <ProjectCard key={project.name} data={project} cardStyle={ProjectcardStyle}/>
   ));
 
   return (
@@ -88,7 +135,7 @@ const Member = ({ projectName }) => {
           style={pieChartStyle}
         />
         <Card>
-          <MemberTable />
+          <MemberTable data={memberTableData} />
         </Card>
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>

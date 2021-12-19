@@ -114,7 +114,7 @@ export class ProjRepo extends Entity {
     type: 'boolean',
     required: true,
   })
-  fork: boolean;
+  isCoreProject: boolean;//if this repo is one focused on by our platform
 
   @belongsTo(() => GithubUser, {name: 'repos_belongs_to_user'})
   owner_id: number;

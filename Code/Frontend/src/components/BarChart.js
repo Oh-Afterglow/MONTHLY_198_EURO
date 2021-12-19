@@ -1,9 +1,9 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
 import { Charts } from '@jiaminghi/data-view-react';
 
-export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
+export default function BarChart({ title, mode, xname, xvalue,xdifference, yname, style }) {
   let option1 = {
     title: {
       text: title,
@@ -15,6 +15,7 @@ export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
     yAxis: {
       name: yname,
       data: 'value',
+      min : 0
     },
     series: [
       {
@@ -30,6 +31,12 @@ export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
           },
         },
       },
+      {
+        data: xdifference[1].value,
+        type: 'bar',
+        stack: 'a',
+      },
+      
     ],
   };
 
@@ -44,6 +51,7 @@ export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
     yAxis: {
       name: yname,
       data: 'value',
+      min : 0
     },
     series: [
       {
@@ -137,6 +145,42 @@ export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
           },
         },
       },
+
+      {
+        data: xdifference[1].value,
+        type: 'bar',
+        stack: 'a',
+      },
+      {
+        data: xdifference[2].value,
+        type: 'bar',
+        stack: 'b',
+      },
+      {
+        data: xdifference[3].value,
+        type: 'bar',
+        stack: 'c',
+      },
+      {
+        data: xdifference[4].value,
+        type: 'bar',
+        stack: 'd',
+      },
+      {
+        data: xdifference[5].value,
+        type: 'bar',
+        stack: 'e',
+      },
+      {
+        data: xdifference[6].value,
+        type: 'bar',
+        stack: 'f',
+      },
+      {
+        data: xdifference[7].value,
+        type: 'bar',
+        stack: 'g',
+      },
     ],
   };
 
@@ -151,6 +195,7 @@ export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
     yAxis: {
       name: yname,
       data: 'value',
+      min : 0
     },
     series: [
       {
@@ -173,21 +218,42 @@ export default function BarChart({ title, mode, xname, xvalue, yname, style }) {
         type: 'bar',
         stack: 'd',
       },
+
+      {
+        data: xdifference[1].value,
+        type: 'bar',
+        stack: 'a',
+      },
+      {
+        data: xdifference[2].value,
+        type: 'bar',
+        stack: 'b',
+      },
+      {
+        data: xdifference[3].value,
+        type: 'bar',
+        stack: 'c',
+      },
+      {
+        data: xdifference[4].value,
+        type: 'bar',
+        stack: 'd',
+      },
     ],
   };
 
   const mnp = {
-    margin: '1rem 0 1rem',
+    margin: '1rem 0 1rem ',
     padding: '1rem',
   };
 
   return (
     <Grid item>
-      <Card style={{ ...style, ...mnp }}>
+      <Box style={{ ...style, ...mnp }}>
         {mode == '0' ? <Charts option={option1} height='100%' /> : <div></div>}
         {mode == '1' ? <Charts option={option2} height='100%' /> : <div></div>}
         {mode == '2' ? <Charts option={option3} height='100%' /> : <div></div>}
-      </Card>
+      </Box>
     </Grid>
   );
 }

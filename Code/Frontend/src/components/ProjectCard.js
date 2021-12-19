@@ -6,20 +6,12 @@ import Chip from '@mui/material/Chip';
 import StarIcon from '@mui/icons-material/Star';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-const ProjectCard = ({ name,  description ,major,star,lastupdate}) => {
-  const cardStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    padding: '1rem 2rem 0 2rem',
-    margin: '1rem 1rem 0 0',
-    minHeight: '8rem',
-  };
+const ProjectCard = ({ data ,onClick,cardStyle}) => {
 
-
+  const { name, description, major, star, lastupdate } = data;
 
   return (
-    <Card style={cardStyle}>
+    <Card style={cardStyle}  onClick={onClick}>
       <div  style={{display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
         <div>
             <Typography variant='h5'>{name}<Chip label="Public" variant="outlined" size="small"  style={{marginLeft:"10px",marginBottom:"2px"}}/></Typography>

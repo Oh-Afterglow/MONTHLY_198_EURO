@@ -7,7 +7,7 @@ import {
   TableRow,
 } from '@mui/material';
 
-const ProjectTable = () => {
+const ProjectTable = ({ data }) => {
   const cols = [
     { field: 'id', headerName: 'Event ID' },
     { field: 'type', headerName: 'Type' },
@@ -16,12 +16,7 @@ const ProjectTable = () => {
     { field: 'status', headerName: 'Status' },
   ];
 
-  const rows = [
-    { id: 1, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
-    { id: 2, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
-    { id: 3, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
-    { id: 4, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
-  ];
+  const rows = data;
 
   const tableHead = cols.map((col) => (
     <TableCell key={col.field}>{col.headerName}</TableCell>

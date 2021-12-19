@@ -48,13 +48,15 @@ export class GithubUser extends Entity {
 
   @property({
     type: 'string',
+    required: true
   })
-  email?: string;
+  email: string;
 
   @property({
     type: 'string',
+    required: true,
   })
-  bio?: string;
+  bio: string;
 
   @property({
     type: 'number',
