@@ -32,7 +32,7 @@ const MEMBER_COMPOSE: ResponseObject = {
   }
 }
 
-const MEMBER_PROJ: ResponseObject = {
+export const MEMBER_PROJ: ResponseObject = {
   description: 'All projects of a member',
   content: {
     'application/json': {
@@ -53,7 +53,7 @@ const MEMBER_PROJ: ResponseObject = {
   }
 }
 
-const ALL_MEMBERS: ResponseObject = {
+export const ALL_MEMBERS: ResponseObject = {
   description: 'All members of the community (all contributors of a repository',
   content: {
     'application/json': {
@@ -125,7 +125,7 @@ export class MemberController {
     let result = [{
       name: 'individual',
       value: 0,
-    }]
+    }];
 
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id"]});
     if(typeof repo === null){
@@ -199,10 +199,12 @@ export class MemberController {
     if(typeof member === null){
       throw new HttpErrors.NotFound('Member not found. Is this name a login name of GitHub user?');
     }
-    let repos = await this.projRepoRepository.find({where: {owner_id: member?.id}, fields: ["proj_name", "updated_at", "description", "star_num", "language"]});
+    let repos = await this.projRepoRepository.find({where: {owner_id: member?.id}, fields: ["full_name", "updated_at", "description", "star_num", "language"]});
     for (const repo of repos) {
+      if(typeof repo.description === undefined) repo.description = 'SRE is so interesting!';
+      if(repo.language === undefined) repo.language = 'typescript';
       result.push({
-        name: repo.proj_name,
+        name: repo.full_name,
         description: <string>repo.description,
         major: <string>repo.language,
         stars: repo.star_num,

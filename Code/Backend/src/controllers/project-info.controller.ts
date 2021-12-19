@@ -166,6 +166,7 @@ export class ProjectInfoController {
         result.push({name: lang, value: (repo.language_stat as any)[lang]});
       }
     }
+    if(result.length === 0) result.push({name: 'typescript', value: 100});//this is almost impossible
     return result;
   }
 

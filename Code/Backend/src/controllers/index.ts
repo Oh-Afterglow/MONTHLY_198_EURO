@@ -8,3 +8,5 @@ export * from './project-info.controller';
 export * from './member.controller';
 export * from './issue-label.controller';
 export * from './update.controller';
+export * from './admin.controller';
+export * from './user-avatar.controller';
