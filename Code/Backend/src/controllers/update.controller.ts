@@ -2,14 +2,17 @@ import {inject} from '@loopback/core';
 import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullRepository, CommitRepository, LabelRepository} from '../repositories';
 import {get, HttpErrors} from "@loopback/rest";
 import {authenticate} from "@loopback/authentication";
-import {SecurityBindings, UserProfile} from "@loopback/security";
+import {SecurityBindings, securityId, UserProfile} from "@loopback/security";
 import {repository} from "@loopback/repository";
 import {Octokit} from "@octokit/core";
+import {UserRepository} from "@loopback/authentication-jwt";
 
 export class UpdateController {
   constructor(
     @repository(UserExtensionRepository)
     protected userExtensionRepository: UserExtensionRepository,
+    @repository(UserRepository)
+    protected userRepository: UserRepository
   ) {}
 
   @authenticate('jwt')
@@ -31,8 +34,9 @@ export class UpdateController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<boolean>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(typeof permitViewList === null){
       throw new HttpErrors.InternalServerError();
     }

@@ -48,7 +48,7 @@ export default function SignUp() {
 
     const formData = {
       username: data.get('username'),
-      githubName: data.get('githubName'),
+      github_username: data.get('githubName'),
       email: data.get('email'),
       password,
     };

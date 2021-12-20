@@ -11,8 +11,8 @@ import config from '../config';
 const get = async (path, params = {}, withCredential = true) => {
   const response = await axios.get(
     config.apiBaseUrl + path,
-    { params },
-    { withCredential }
+    { params, withCredential, headers:{'Authorization':'Bearer ' + sessionStorage.getItem("token")} },
+
   );
   return response.data;
 };
@@ -24,12 +24,15 @@ const get = async (path, params = {}, withCredential = true) => {
  * @param {boolean} withCredential 
  * @returns *
  */
-const post = async (path, params, withCredential = true) => {
+const post = async (path, params, withCredential = true, withAuthorization = true) => {
+  const authHeaders = {headers:{'Authorization':'Bearer ' + sessionStorage.getItem("token")}}
+
   const response = await axios.post(
     config.apiBaseUrl + path,
     params,
-    { withCredential }
+    { withCredential, ...(withAuthorization ? authHeaders : {})},
   );
+
   return response.data;
 }
 

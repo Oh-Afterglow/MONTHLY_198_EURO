@@ -48,10 +48,17 @@ const Member = ({ projectName }) => {
     },
   ]);
 
-  React.useEffect(
-    () => async () => {
+  const  [memberTableData, setmemberTableData] =  useState([
+    { id: 1, time: '2021/11/11', event: 'Development01 join the team' },
+    { id: 2, time: '2021/11/11', event: 'Development01 leave the team' },
+    { id: 3, time: '2021/11/30', event: 'Development03 join the team' },
+    { id: 4, time: '2021/11/11', event: 'Development04 join the team' },
+  ]);
+
+  React.useEffect(() => {
+    const f1 = async () => {
       try {
-        const data = await request.get('/project/compose', {
+        const data = await request.get('/member/compose', {
           projectName,
         });
         if (data instanceof Array) {
@@ -63,7 +70,60 @@ const Member = ({ projectName }) => {
         // TODO: handle error
         console.error(e);
       }
-    },
+    }
+    const f2 = async () => {
+      try {
+        const data = await request.get('/member/events', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setmemberTableData(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    }
+    const f3 = async () => {
+      try {
+        const data = await request.get('/member/members', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setMembers(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    }
+      const f4 = async () => {
+        try {
+          const data = await request.get('/member/projects', {
+            projectName,
+          });
+          if (data instanceof Array) {
+            setProjects(data);
+            console.log(data)
+          } else {
+            throw new Error('Invalid data');
+          }
+        } catch (e) {
+          // TODO: handle error
+          console.error(e);
+        }
+      }
+      f1()
+      f2()
+      f3()
+      f4()
+
+
+      },
     []
   );
 
@@ -72,12 +132,7 @@ const Member = ({ projectName }) => {
     marginRight: 0,
   };
 
-  const memberTableData = [
-    { id: 1, time: '2021/11/11', event: 'Development01 join the team' },
-    { id: 2, time: '2021/11/11', event: 'Development01 leave the team' },
-    { id: 3, time: '2021/11/30', event: 'Development03 join the team' },
-    { id: 4, time: '2021/11/11', event: 'Development04 join the team' },
-  ];
+
 
   const [selectedMember, setSelectedMember] = useState(-1);
   const activities = [

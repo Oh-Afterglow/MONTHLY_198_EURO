@@ -101,7 +101,7 @@ export class UserController {
   async login(
       @requestBody(CredentialsRequestBody) credentials: Credentials,
   ): Promise<{token: string}> {
-
+    console.log('User is logging in');
     try{
       // ensure the user exists, and the password is correct
       const user = await this.userService.verifyCredentials(credentials);
@@ -166,6 +166,7 @@ export class UserController {
       })
           newUserRequest: NewUserRequest,
   ): Promise<User> {
+    console.log("User is signing up");
     const password = await hash(newUserRequest.password, await genSalt());
     const savedUser = await this.userRepository.create(
         _.omit(newUserRequest, ['password', 'avatar', 'github_username']),

@@ -46,8 +46,10 @@ export default function SignIn() {
     };
 
     try {
-      await request.post('/login', formData);
-
+      const data  = await request.post('/login', formData, false, false);
+      console.log(data);
+      console.log(data.token)
+      sessionStorage.setItem("token",data.token)
       // TODO: after login
     } catch (e) {
       // TODO: handle exception
@@ -55,6 +57,9 @@ export default function SignIn() {
       // eslint-disable-next-line no-console
       console.log(e);
     }
+
+
+
   };
 
   return (
@@ -97,14 +102,16 @@ export default function SignIn() {
               id='password'
               autoComplete='current-password'
             />
-            <Button
-              type='submit'
-              fullWidth
-              variant='contained'
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
+            <Link href='/' variant='body2'>
+              <Button
+                type='submit'
+                fullWidth
+                variant='contained'
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+            </Link>
             <Grid container>
               <Grid item>
                 <Link href='/signup' variant='body2'>

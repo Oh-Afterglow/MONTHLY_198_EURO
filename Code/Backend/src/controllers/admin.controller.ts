@@ -22,7 +22,7 @@ import {ProjRepoRepository, UserExtensionRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import {ALL_MEMBERS as ALL_USERS, MEMBER_PROJ as PROJECTS} from "./member.controller";//reusing response objects
 
-import {SecurityBindings, UserProfile} from "@loopback/security";
+import {SecurityBindings, securityId, UserProfile} from "@loopback/security";
 import {inject} from "@loopback/core";
 import {Octokit} from "@octokit/core";
 
@@ -45,9 +45,10 @@ export class AdminController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<{name: string, avatar: string, description: string}[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['is_admin']});
-    if(!permitViewList?.is_admin){
+    let currentUserID = currentUserProfile[securityId];
+    let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});
+    if(!currentUser?.is_admin){
       throw new HttpErrors.Forbidden();
     }
     let result: {name: string, avatar: string, description: string}[] = [];
@@ -68,8 +69,9 @@ export class AdminController {
       result.push({
         name: <string>userBasicInfo?.username,
         avatar: avatarUrl,
-        description: <string>userBasicInfo?.email,
+        description: userExtraInfo.email,
       });
+      // console.log(result);
     }
     return result;
   }
@@ -87,9 +89,10 @@ export class AdminController {
     stars: number,
     lastUpdate: string
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['is_admin']});
-    if(!permitViewList?.is_admin){
+    let currentUserID = currentUserProfile[securityId];
+    let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});
+    if(!currentUser?.is_admin){
       throw new HttpErrors.Forbidden();
     }
     let result: {
@@ -130,9 +133,10 @@ export class AdminController {
     stars: number,
     lastUpdate: string
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['is_admin']});
-    if(!permitViewList?.is_admin){
+    let currentUserID = currentUserProfile[securityId];
+    let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});
+    if(!currentUser?.is_admin){
       throw new HttpErrors.Forbidden();
     }
     let result: {
@@ -144,21 +148,24 @@ export class AdminController {
     }[] = [];
     let user = await this.userExtensionRepository.findById(userEmail, {fields: ["repo_view_list"]});
     if(user === null) throw new HttpErrors.NotFound('User not found');
-    for (const projName of user.repo_view_list) {
-      let project = await this.repoRepository.findOne({where: {full_name: projName}, fields: ["full_name", "description", "language", "star_num", "updated_at"]});
-      if(project === null) {
-        throw new HttpErrors.NotFound('Run update for the user, or check if the project name is correct');
+    if(user.repo_view_list != null){
+      for (const projName of user.repo_view_list) {
+        let project = await this.repoRepository.findOne({where: {full_name: projName}, fields: ["full_name", "description", "language", "star_num", "updated_at"]});
+        if(project === null) {
+          throw new HttpErrors.NotFound('Run update for the user, or check if the project name is correct');
+        }
+        if(project.description === undefined) project.description = 'Arch真香';
+        if(project.language === undefined) project.language = 'typescript';
+        result.push({
+          name: project.full_name,
+          description: project.description,
+          major: project.language,
+          stars: project.star_num,
+          lastUpdate: project.updated_at,
+        });
       }
-      if(project.description === undefined) project.description = 'Arch真香';
-      if(project.language === undefined) project.language = 'typescript';
-      result.push({
-        name: project.full_name,
-        description: project.description,
-        major: project.language,
-        stars: project.star_num,
-        lastUpdate: project.updated_at,
-      });
     }
+
     return result;
   }
 
@@ -189,18 +196,25 @@ export class AdminController {
     stars: number,
     lastUpdate: string
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findById(<string>currentUserEmail, {fields: ['is_admin']});
-    if(!permitViewList?.is_admin){
-      throw new HttpErrors.Forbidden();
+    console.log('/admin/add');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});
+    if(!currentUser?.is_admin){
+      throw new HttpErrors.Forbidden('test');
     }
     let user = await this.userExtensionRepository.findById(body.userid);
     if(user == null) throw new HttpErrors.NotFound('User not found');
+    if(user.repo_view_list == null){
+      user.repo_view_list = [];
+    }
     if(user.repo_view_list.includes(body.projectName)){
       throw new HttpErrors.ExpectationFailed('The project is already belongs to this user.');
     }
-    let newProject = this.repoRepository.findOne({where: {full_name: body.projectName}});
-    if(newProject === null){
+    let newProject = await this.repoRepository.findOne({where: {full_name: body.projectName}});
+    // console.log(newProject);
+    if(!newProject){
+      // console.log(111111);
       try{//if the repo is not in the db, create its record
         const repoResponse = await this.octokit.request("GET /repos/{owner}/{repo}", {
           owner: body.projectName.split('/')[0],
@@ -237,11 +251,10 @@ export class AdminController {
         else throw Error;
       }
     }
-
     user.repo_view_list.push(body.projectName);
     await this.userExtensionRepository.save(user);
 
-    return this.userProjView(body.userid, currentUserProfile);
+    return await this.userProjView(body.userid, currentUserProfile);
   }
 
   @authenticate('jwt')
@@ -271,9 +284,10 @@ export class AdminController {
     stars: number,
     lastUpdate: string
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findById(<string>currentUserEmail, {fields: ['is_admin']});
-    if(!permitViewList?.is_admin){
+    let currentUserID = currentUserProfile[securityId];
+    let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});
+    if(!currentUser?.is_admin){
       throw new HttpErrors.Forbidden();
     }
     let user = await this.userExtensionRepository.findById(body.userid);
@@ -281,9 +295,11 @@ export class AdminController {
     if(!user.repo_view_list.includes(body.projectName)){
       throw new HttpErrors.ExpectationFailed('The project doesn\'t belongs to this user.');
     }
-    user.repo_view_list = user.repo_view_list.splice(user.repo_view_list.indexOf(body.projectName), 1);
+    user.repo_view_list.splice(user.repo_view_list.indexOf(body.projectName), 1);
+    // console.log(user.repo_view_list);
+    // console.log(user.repo_view_list.indexOf(body.projectName));
     await this.userExtensionRepository.save(user);
-    return this.userProjView(body.userid, currentUserProfile);
+    return await this.userProjView(body.userid, currentUserProfile);
   }
 
 

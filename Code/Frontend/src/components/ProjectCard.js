@@ -8,7 +8,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 
 const ProjectCard = ({ data ,onClick,cardStyle}) => {
 
-  const { name, description, major, star, lastupdate } = data;
+  const { name, description, major, stars, lastUpdate } = data;
 
   return (
     <Card style={cardStyle}  onClick={onClick}>
@@ -21,8 +21,8 @@ const ProjectCard = ({ data ,onClick,cardStyle}) => {
             <GitHubIcon style={{opacity:"0.5"}}/>
             <Typography variant='body1'style={{marginLeft:"10px"}}>{major}</Typography>
             <StarIcon style={{opacity:"0.3" ,marginLeft:"10px"}}/>
-            <Typography variant='body1'style={{marginLeft:"5px"}} >{star}</Typography>
-            <Typography variant="caption" style={{marginLeft:"20px",opacity:"0.8" ,}}>{lastupdate}</Typography>
+            <Typography variant='body1'style={{marginLeft:"5px"}} >{stars}</Typography>
+            <Typography variant="caption" style={{marginLeft:"20px",opacity:"0.8" ,}}>{lastUpdate}</Typography>
         </div>
       </div>
     </Card>

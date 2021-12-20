@@ -21,7 +21,8 @@ import {Issue, IssueRelations, ProjRepo, Pull, PullRelations} from '../models';
 import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullRepository, CommitRepository, LabelRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import {inject} from "@loopback/core";
-import {SecurityBindings, UserProfile} from "@loopback/security";
+import {UserRepository} from "@loopback/authentication-jwt";
+import {SecurityBindings, securityId, UserProfile} from "@loopback/security";
 
 const PROJECT_COMPOSE: ResponseObject = {
   description: 'The composition of a project',
@@ -140,7 +141,9 @@ export class ProjectInfoController {
     @repository(IssueRepository)
     protected issueRepository: IssueRepository,
     @repository(PullRepository)
-    protected pullRepository: PullRepository
+    protected pullRepository: PullRepository,
+    @repository(UserRepository)
+    protected userRepository: UserRepository,
   ) {}
 
   @authenticate('jwt')
@@ -151,8 +154,10 @@ export class ProjectInfoController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<{name: string, value: number}[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/compose');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -178,8 +183,10 @@ export class ProjectInfoController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<{issue: number, commit: number, pullRequest: number}>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/numbers');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -208,8 +215,10 @@ export class ProjectInfoController {
     name: string,
     value: { name: string, value: number[] }[],
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/commit');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -233,8 +242,10 @@ export class ProjectInfoController {
     name: string,
     value: { name: string, value: number[] }[],
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/issue');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('You don\'t have the permission to view this repo.');
     }
@@ -257,8 +268,10 @@ export class ProjectInfoController {
     name: string,
     value: { name: string, value: number[] }[],
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/pr');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -281,8 +294,10 @@ export class ProjectInfoController {
     name: string,
     value: { name: string, value: number[] }[],
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('project/issuewait');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -305,8 +320,10 @@ export class ProjectInfoController {
     name: string,
     value: { name: string, value: number[] }[],
   }[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/prwait');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -326,8 +343,10 @@ export class ProjectInfoController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<number[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/issuesolve');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -350,8 +369,10 @@ export class ProjectInfoController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<number[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/prsolve');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -374,8 +395,10 @@ export class ProjectInfoController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<{name: string, value: number}[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    console.log('/project/issue/tag');
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -406,127 +429,6 @@ export class ProjectInfoController {
     return result;
   }
 
-  // @post('/project')
-  // @response(200, {
-  //   description: 'ProjRepo model instance',
-  //   content: {'application/json': {schema: getModelSchemaRef(ProjRepo)}},
-  // })
-  // async create(
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(ProjRepo, {
-  //           title: 'NewProjRepo',
-  //
-  //         }),
-  //       },
-  //     },
-  //   })
-  //   projRepo: ProjRepo,
-  // ): Promise<ProjRepo> {
-  //   return this.projRepoRepository.create(projRepo);
-  // }
-
-  // @get('/project/count')
-  // @response(200, {
-  //   description: 'ProjRepo model count',
-  //   content: {'application/json': {schema: CountSchema}},
-  // })
-  // async count(
-  //   @param.where(ProjRepo) where?: Where<ProjRepo>,
-  // ): Promise<Count> {
-  //   return this.projRepoRepository.count(where);
-  // }
-  //
-  // @get('/project')
-  // @response(200, {
-  //   description: 'Array of ProjRepo model instances',
-  //   content: {
-  //     'application/json': {
-  //       schema: {
-  //         type: 'array',
-  //         items: getModelSchemaRef(ProjRepo, {includeRelations: true}),
-  //       },
-  //     },
-  //   },
-  // })
-  // async find(
-  //   @param.filter(ProjRepo) filter?: Filter<ProjRepo>,
-  // ): Promise<ProjRepo[]> {
-  //   return this.projRepoRepository.find(filter);
-  // }
-  //
-  // @patch('/project')
-  // @response(200, {
-  //   description: 'ProjRepo PATCH success count',
-  //   content: {'application/json': {schema: CountSchema}},
-  // })
-  // async updateAll(
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(ProjRepo, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   projRepo: ProjRepo,
-  //   @param.where(ProjRepo) where?: Where<ProjRepo>,
-  // ): Promise<Count> {
-  //   return this.projRepoRepository.updateAll(projRepo, where);
-  // }
-  //
-  // @get('/project/{id}')
-  // @response(200, {
-  //   description: 'ProjRepo model instance',
-  //   content: {
-  //     'application/json': {
-  //       schema: getModelSchemaRef(ProjRepo, {includeRelations: true}),
-  //     },
-  //   },
-  // })
-  // async findById(
-  //   @param.path.number('id') id: number,
-  //   @param.filter(ProjRepo, {exclude: 'where'}) filter?: FilterExcludingWhere<ProjRepo>
-  // ): Promise<ProjRepo> {
-  //   return this.projRepoRepository.findById(id, filter);
-  // }
-  //
-  // @patch('/project/{id}')
-  // @response(204, {
-  //   description: 'ProjRepo PATCH success',
-  // })
-  // async updateById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(ProjRepo, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   projRepo: ProjRepo,
-  // ): Promise<void> {
-  //   await this.projRepoRepository.updateById(id, projRepo);
-  // }
-  //
-  // @put('/project/{id}')
-  // @response(204, {
-  //   description: 'ProjRepo PUT success',
-  // })
-  // async replaceById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody() projRepo: ProjRepo,
-  // ): Promise<void> {
-  //   await this.projRepoRepository.replaceById(id, projRepo);
-  // }
-  //
-  // @del('/project/{id}')
-  // @response(204, {
-  //   description: 'ProjRepo DELETE success',
-  // })
-  // async deleteById(@param.path.number('id') id: number): Promise<void> {
-  //   await this.projRepoRepository.deleteById(id);
-  // }
 }
 
 function timeFilter(all: {updated_at: string}[]): {
@@ -538,19 +440,19 @@ function timeFilter(all: {updated_at: string}[]): {
     name: '0',
     value: [{
       name: 'We love wzy, wzy is our goddess!',
-      value: [0, 0, 0, 0, 0, 0, 0],
-    }]
+      value: [50, 0, 0, 0, 0, 0, 0],
+    }, {value: [], name: '0'},{value: [], name: '0'}, {value: [], name: '0'}, {value: [], name: '0'}, {value: [], name: '0'}, {value: [], name: '0'}]
   });
   result.push({
     name: '1',
     value: [
-      { name: 'Sunday', value: [0, 0, 0, 0] },
-      { name: 'Monday', value: [0, 0, 0, 0] },
+      { name: 'Sunday', value: [10, 0, 0, 0] },
+      { name: 'Monday', value: [10, 0, 0, 0] },
       { name: 'Tuesday', value: [0, 0, 0, 0] },
-      { name: 'Wednesday', value: [0, 0, 0, 0] },
+      { name: 'Wednesday', value: [10, 0, 0, 0] },
       { name: 'Thursday', value: [0, 0, 0, 0] },
       { name: 'Friday', value: [0, 0, 0, 0] },
-      { name: 'Saturday', value: [0, 0, 0, 0] },
+      { name: 'Saturday', value: [10, 0, 0, 0] },
     ]
   });
   result.push({
@@ -560,6 +462,7 @@ function timeFilter(all: {updated_at: string}[]): {
       { name: 'week2', value: [0, 0, 0, 0, 0, 0] },
       { name: 'week3', value: [0, 0, 0, 0, 0, 0] },
       { name: 'week4', value: [0, 0, 0, 0, 0, 0] },
+      {value: [], name: '0'}, {value: [], name: '0'}, {value: [], name: '0'}
     ],
   })
   let today = new Date();
@@ -593,7 +496,7 @@ function timeFilter(all: {updated_at: string}[]): {
 }
 
 function timeFilterV2(all: (Issue & IssueRelations | Pull & PullRelations)[]): number[]{
-  let result = [0, 0, 0, 0, 0];
+  let result = [0,20, 0, 0, 0];
   let today = new Date();
   today.setTime(today.getTime() + 1000 * 60 * 60 * 24);
   today.setHours(0, 0, 0, 0);
