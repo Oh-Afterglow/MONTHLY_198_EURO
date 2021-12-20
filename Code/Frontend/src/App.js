@@ -28,10 +28,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Dashboard />} />
+        <Route path='/' element={<Dashboard projectName={'pytorch/pytorch'}/>} />
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
-        <Route path='/member' element={<Member />} />
+        <Route path='/member' element={<Member  projectName={'pytorch/pytorch'}/>} />
         <Route path='/admin' element={<Admin />} />
       </Routes>
     </BrowserRouter>

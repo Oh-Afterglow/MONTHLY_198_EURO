@@ -10,9 +10,10 @@ import {
   PullRepository,
   UserExtensionRepository
 } from '../repositories';
-import {SecurityBindings, UserProfile} from "@loopback/security";
+import {SecurityBindings, securityId, UserProfile} from "@loopback/security";
 import {authenticate} from "@loopback/authentication";
 import {inject} from "@loopback/core";
+import {UserRepository} from "@loopback/authentication-jwt";
 
 const MEMBER_COMPOSE: ResponseObject = {
   description: 'The member composition of a project',
@@ -106,7 +107,9 @@ export class MemberController {
     @repository(IssueRepository)
     protected issueRepository: IssueRepository,
     @repository(CommentsIssueRepository)
-    protected commentsIssueRepository: CommentsIssueRepository
+    protected commentsIssueRepository: CommentsIssueRepository,
+    @repository(UserRepository)
+    protected userRepository: UserRepository
   ) {}
 
   @authenticate('jwt')
@@ -117,8 +120,9 @@ export class MemberController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<{name: string, value: number}[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -222,8 +226,9 @@ export class MemberController {
       @inject(SecurityBindings.USER)
                 currentUserProfile: UserProfile,
   ): Promise<{name: string, avatar: string, description: string}[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
@@ -285,8 +290,9 @@ export class MemberController {
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ):Promise<{time: string, event: string, memberName: string}[]>{
-    let currentUserEmail = currentUserProfile["email"];
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUserEmail}, fields: ['repo_view_list', 'is_admin']});
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }

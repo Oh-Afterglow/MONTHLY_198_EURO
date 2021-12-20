@@ -68,14 +68,16 @@ const Admin = ({  }) => {
 
 
 
-    React.useEffect(
-    () => async () => {                                       //获取所有用户数据
+    React.useEffect(() =>
+    {
+        const f1 = async () => {                                       //获取所有用户数据
         try {
             const data = await request.get('/admin/alluser', {
             
-            });
+            },);
             if (data instanceof Array) {
                 setMembers(data);
+                console.log(data)
             } else {
                 throw new Error('Invalid data');
             }
@@ -83,14 +85,15 @@ const Admin = ({  }) => {
         // TODO: handle error
             console.error(e);
         }
-    },
-    () => async () => {                                       //获取所有项目信息
+    }
+    const f2 =  async () => {                                       //获取所有项目信息
         try {
             const data = await request.get('/admin/allproject', {
             
             });
             if (data instanceof Array) {
                 setProjects(data);
+                console.log(data)
             } else {
                 throw new Error('Invalid data');
             }
@@ -98,6 +101,9 @@ const Admin = ({  }) => {
         // TODO: handle error
             console.error(e);
         }
+    }
+    f1();
+    f2();
     },
     []);
 
@@ -130,15 +136,19 @@ const Admin = ({  }) => {
 
     async function add(){                                                    //增加一个pro到用户
         //这里向后端发请求增加
-        if(selectedUserPro!=-1){
+        if(selectedAllPro!=-1){
             console.log(projects[selectedAllPro].name)
-            let addname = selectprojects[selectedUserPro].name
+            let addname = projects[selectedAllPro].name
+            let userid = members[selectedUser].description
+            console.log(addname)
+            console.log(userid)
             try {
-                const data = await request.get('/admin/add', {
-                    addname,
+                const data = await request.post('/admin/add', {
+                    projectName:addname,userid:userid
                 });
                 if (data instanceof Array) {
                     setSelectprojects(data);
+                    console.log(data)
                 } else {
                   throw new Error('Invalid data');
                 }
@@ -155,12 +165,15 @@ const Admin = ({  }) => {
         if(selectedUserPro!=-1){
             console.log(selectprojects[selectedUserPro].name)
             let deletename = selectprojects[selectedUserPro].name
+            let userid = members[selectedUser].description
+            console.log(userid)
             try {
-                const data = await request.get('/admin/remove', {
-                    deletename,
+                const data = await request.post('/admin/remove', {
+                    projectName:deletename,userid:userid
                 });
                 if (data instanceof Array) {
                     setSelectprojects(data);
+                    console.log(data)
                 } else {
                   throw new Error('Invalid data');
                 }
@@ -226,6 +239,7 @@ const Admin = ({  }) => {
             key={project.name} 
             data={project} 
             cardStyle={selectedUserPro !== id?ProjectcardStyle:ProjectcardStyleoutline}
+
             onClick={() => {setSelectedUserPro(selectedUserPro === id ? -1 : id)}}
         />
     ));
@@ -236,6 +250,7 @@ const Admin = ({  }) => {
         key={project.name} 
         data={project} 
         cardStyle={selectedAllPro !== id?ProjectcardStyle:ProjectcardStyleoutline}
+
         onClick={() => {setSelectedAllPro(selectedAllPro === id ? -1 : id)}}
         />
     ));

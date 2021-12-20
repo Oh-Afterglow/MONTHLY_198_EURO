@@ -10,7 +10,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     },
     xAxis: {
       name: xname,
-      data: xvalue[0].value,
+      data: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
     },
     yAxis: {
       name: yname,
@@ -19,7 +19,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     },
     series: [
       {
-        data: xvalue[1].value,
+        data: xvalue[0].value,
         type: 'bar',
         stack: 'a',
         label: {
@@ -32,7 +32,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
         },
       },
       {
-        data: xdifference[1].value,
+        data: xdifference[0].value,
         type: 'bar',
         stack: 'a',
       },
@@ -46,7 +46,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     },
     xAxis: {
       name: xname,
-      data: xvalue[0].value,
+      data: ['week1', 'week2', 'week3', 'week4']
     },
     yAxis: {
       name: yname,
@@ -55,7 +55,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     },
     series: [
       {
-        data: xvalue[1].value,
+        data: xvalue[0].value,
         type: 'bar',
         stack: 'a',
         label: {
@@ -68,7 +68,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
         },
       },
       {
-        data: xvalue[2].value,
+        data: xvalue[1].value,
         type: 'bar',
         stack: 'b',
         label: {
@@ -81,7 +81,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
         },
       },
       {
-        data: xvalue[3].value,
+        data: xvalue[2].value,
         type: 'bar',
         stack: 'c',
         label: {
@@ -94,9 +94,22 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
         },
       },
       {
-        data: xvalue[4].value,
+        data: xvalue[3].value,
         type: 'bar',
         stack: 'd',
+        label: {
+          show: true,
+          position: 'center',
+          offset: [0, 0],
+          style: {
+            fill: '#fff',
+          },
+        },
+      },
+      {
+        data: xvalue[4].value,
+        type: 'bar',
+        stack: 'e',
         label: {
           show: true,
           position: 'center',
@@ -109,7 +122,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
       {
         data: xvalue[5].value,
         type: 'bar',
-        stack: 'e',
+        stack: 'f',
         label: {
           show: true,
           position: 'center',
@@ -122,19 +135,6 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
       {
         data: xvalue[6].value,
         type: 'bar',
-        stack: 'f',
-        label: {
-          show: true,
-          position: 'center',
-          offset: [0, 0],
-          style: {
-            fill: '#fff',
-          },
-        },
-      },
-      {
-        data: xvalue[7].value,
-        type: 'bar',
         stack: 'g',
         label: {
           show: true,
@@ -147,37 +147,37 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
       },
 
       {
-        data: xdifference[1].value,
+        data: xdifference[0].value,
         type: 'bar',
         stack: 'a',
       },
       {
-        data: xdifference[2].value,
+        data: xdifference[1].value,
         type: 'bar',
         stack: 'b',
       },
       {
-        data: xdifference[3].value,
+        data: xdifference[2].value,
         type: 'bar',
         stack: 'c',
       },
       {
-        data: xdifference[4].value,
+        data: xdifference[3].value,
         type: 'bar',
         stack: 'd',
       },
       {
-        data: xdifference[5].value,
+        data: xdifference[4].value,
         type: 'bar',
         stack: 'e',
       },
       {
-        data: xdifference[6].value,
+        data: xdifference[5].value,
         type: 'bar',
         stack: 'f',
       },
       {
-        data: xdifference[7].value,
+        data: xdifference[6].value,
         type: 'bar',
         stack: 'g',
       },
@@ -190,7 +190,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     },
     xAxis: {
       name: xname,
-      data: xvalue[0].value,
+      data: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6']
     },
     yAxis: {
       name: yname,
@@ -199,43 +199,43 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
     },
     series: [
       {
-        data: xvalue[1].value,
+        data: xvalue[0].value,
         type: 'bar',
         stack: 'a',
       },
       {
-        data: xvalue[2].value,
+        data: xvalue[1].value,
         type: 'bar',
         stack: 'b',
       },
       {
-        data: xvalue[3].value,
+        data: xvalue[2].value,
         type: 'bar',
         stack: 'c',
       },
       {
-        data: xvalue[4].value,
+        data: xvalue[3].value,
         type: 'bar',
         stack: 'd',
       },
 
       {
-        data: xdifference[1].value,
+        data: xdifference[0].value,
         type: 'bar',
         stack: 'a',
       },
       {
-        data: xdifference[2].value,
+        data: xdifference[1].value,
         type: 'bar',
         stack: 'b',
       },
       {
-        data: xdifference[3].value,
+        data: xdifference[2].value,
         type: 'bar',
         stack: 'c',
       },
       {
-        data: xdifference[4].value,
+        data: xdifference[3].value,
         type: 'bar',
         stack: 'd',
       },
