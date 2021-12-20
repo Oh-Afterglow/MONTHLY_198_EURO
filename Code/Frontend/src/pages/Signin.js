@@ -102,7 +102,6 @@ export default function SignIn() {
               id='password'
               autoComplete='current-password'
             />
-            <Link href='/' variant='body2'>
               <Button
                 type='submit'
                 fullWidth
@@ -111,7 +110,6 @@ export default function SignIn() {
               >
                 Sign In
               </Button>
-            </Link>
             <Grid container>
               <Grid item>
                 <Link href='/signup' variant='body2'>

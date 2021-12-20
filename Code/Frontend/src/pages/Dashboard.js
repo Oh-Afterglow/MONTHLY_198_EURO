@@ -21,6 +21,13 @@ const Dashboard = ({ projectName }) => {
     { name: 'Image', value: 200 },
   ]);
 
+  const [projectnumber, setProjectnumber] = React.useState([
+    { commit: '10', issue: '23', pullRequest: '244' }
+  ]);
+
+
+
+
   const [choosemode, setchoosemode] = useState(0);
   //为了降低代码量，这里使用的格式比较蠢，想的是后端把这里都返回过来，然后改图表粒度的时候就可以简单点
   const [commit, setcommit] = React.useState([
@@ -426,15 +433,31 @@ const Dashboard = ({ projectName }) => {
         console.error(e);
       }
     }
-    f1();
-    f2();
-    f3();
-    f4();
-    f5();
-    f6();
-    f7();
-    f8();
 
+      const f9 =async () => {
+        try {
+          const data = await request.get('/project/numbers', {
+            projectName,
+          });
+          if (data instanceof Array) {
+            setProjectnumber(data);
+          } else {
+            throw new Error('Invalid data');
+          }
+        } catch (e) {
+          // TODO: handle error
+          console.error(e);
+        }
+      }
+      f1();
+      f2();
+      f3();
+      f4();
+      f5();
+      f6();
+      f7();
+      f8();
+      f9();
       },
     []
   );
@@ -461,7 +484,7 @@ const Dashboard = ({ projectName }) => {
   return (
     <Layout>
       <Grid item container direction='column' xs={12} sm={4}>
-        <NumberCard data={{ commit: '10', issue: '23', pullRequest: '244' }} />
+        <NumberCard data={projectnumber} />
         <PieChart
           title={'Project Composition'}
           data={composeData}
