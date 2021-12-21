@@ -310,22 +310,25 @@ export class AdminController {
     try{
       const repoResponse = await this.octokit.request("GET /repos/{owner}/{repo}", {
         owner: 'RalXYZ',
-        repo: 'test',
+        repo: 'oh-my-tss',
       });
-      console.log(repoResponse.status, repoResponse.data, repoResponse.headers);
+      console.log(repoResponse.status,'\n', repoResponse.data, repoResponse.headers);
+      this.octokit = new Octokit();
+      const userResponse = await this.octokit.request("GET /rate_limit");
+      console.log(userResponse.data);
 
     }catch (Error){
       console.log(Error.status);
     }finally {
-      const repoResponse = await this.octokit.request("GET /repos/{owner}/{repo}", {
-        owner: 'pytorch',
-        repo: 'pytorch',
-      });
-      const lang = await this.octokit.request("GET /repos/{owner}/{repo}/languages", {
-        owner: 'pytorch',
-        repo: 'pytorch',
-      });
-      console.log(repoResponse.data.id, '\n', lang.data);
+      // const repoResponse = await this.octokit.request("GET /repos/{owner}/{repo}", {
+      //   owner: 'pytorch',
+      //   repo: 'pytorch',
+      // });
+      // const lang = await this.octokit.request("GET /repos/{owner}/{repo}/languages", {
+      //   owner: 'pytorch',
+      //   repo: 'pytorch',
+      // });
+      // console.log(repoResponse.data.id, '\n', lang.data);
     }
   }
 

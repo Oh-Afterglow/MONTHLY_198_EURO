@@ -54,9 +54,8 @@ export class GithubUser extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
-  bio: string;
+  bio?: string;
 
   @property({
     type: 'number',
@@ -72,15 +71,13 @@ export class GithubUser extends Entity {
 
   @property({
     type: 'date',
-    required: true,
   })
-  created_at: string;
+  created_at?: string;
 
   @property({
     type: 'date',
-    required: true,
   })
-  updated_at: string;
+  updated_at?: string;
 
   @property({
     type: 'number',
@@ -95,6 +92,12 @@ export class GithubUser extends Entity {
   isOrg: boolean;
 
   @property({
+    type: 'boolean',
+    required: true,
+  })
+  display: boolean;
+
+  @property({
     type: 'string',
   })
   blog?: string;
@@ -102,9 +105,14 @@ export class GithubUser extends Entity {
   @property({
     type: 'array',
     itemType: 'string',
-    required: true,
   })
-  org_name: string[];
+  org_name?: string[];
+
+  @property({
+    type: 'array',
+    itemType: 'string',
+  })
+  contributesFor?: string[];
 
 
   constructor(data?: Partial<GithubUser>) {

@@ -3,12 +3,12 @@ import {Entity, model, property} from '@loopback/repository';
 @model()
 export class Label extends Entity {
   @property({
-    type: 'number',
+    type: 'string',
     id: true,
     generated: false,
     required: true,
   })
-  id: number;
+  id: string;
 
   @property({
     type: 'string',
@@ -17,9 +17,9 @@ export class Label extends Entity {
   name: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  color?: number;
+  color?: string;
 
   @property({
     type: 'string',
@@ -27,9 +27,11 @@ export class Label extends Entity {
   description?: string;
 
   @property({
-    type: 'number',
+    type: 'array',
+    itemType: 'number',
+    required: true
   })
-  issueId?: number;
+  issueId: number[];
 
   constructor(data?: Partial<Label>) {
     super(data);
