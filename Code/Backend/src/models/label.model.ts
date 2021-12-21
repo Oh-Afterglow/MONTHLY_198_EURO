@@ -17,9 +17,9 @@ export class Label extends Entity {
   name: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  color?: number;
+  color?: string;
 
   @property({
     type: 'string',

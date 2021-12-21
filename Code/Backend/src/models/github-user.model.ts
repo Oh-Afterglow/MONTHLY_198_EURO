@@ -95,6 +95,12 @@ export class GithubUser extends Entity {
   isOrg: boolean;
 
   @property({
+    type: 'boolean',
+    required: true,
+  })
+  display: boolean;
+
+  @property({
     type: 'string',
   })
   blog?: string;
@@ -105,6 +111,13 @@ export class GithubUser extends Entity {
     required: true,
   })
   org_name: string[];
+
+  @property({
+    type: 'array',
+    itemType: 'string',
+    required: true,
+  })
+  contributesFor: string[];
 
 
   constructor(data?: Partial<GithubUser>) {

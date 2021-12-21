@@ -135,6 +135,7 @@ export class MemberController {
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
+
     let prSender = await this.projRepoRepository.pr_sender(<number>repo?.id).find({fields: ["org_name", "id"]});
     let issueSender = await this.projRepoRepository.issue_adder(<number>repo?.id).find({fields: ["org_name", "id"]});
     let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["author_id", "author_email"]});
@@ -236,49 +237,64 @@ export class MemberController {
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
-    let prSenders = await this.projRepoRepository.pr_sender(<number>repo?.id).find({fields: ["login_name", "avatar_url", "bio"]});
-    let issueSenders = await this.projRepoRepository.issue_adder(<number>repo?.id).find({fields: ["login_name", "avatar_url", "bio"]});
-    let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["author_id", "author_email", "author_name"]});
+    // let prSenders = await this.projRepoRepository.pr_sender(<number>repo?.id).find({fields: ["login_name", "avatar_url", "bio"]});
+    // let issueSenders = await this.projRepoRepository.issue_adder(<number>repo?.id).find({fields: ["login_name", "avatar_url", "bio"]});
+    // let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["author_id", "author_email", "author_name"]});
     let result: {name: string, avatar: string, description: string}[] = [];
-    for (const prSender of prSenders) {
-      let member = {
-        name: prSender.login_name,
-        avatar: prSender.avatar_url,
-        description: prSender.bio,
-      };
-      if(member.description.length === 0) member.description = '我爱万志远';//placeholder
-      if(!result.includes(member)){
-        result.push(member);
-      }
-    }
-    for (const issueSender of issueSenders) {
-      let member = {
-        name: issueSender.login_name,
-        avatar: issueSender.avatar_url,
-        description: issueSender.bio,
-      };
-      if(member.description.length === 0) member.description = '我爱万志远';
-      if (!result.includes(member)){
-        result.push(member);
-      }
-    }
-    for (const commit of allCommits) {
-      if(commit.author_id != undefined){
-        let committer = await this.githubUserRepository.findById(commit.author_id, {fields: ["login_name", "avatar_url", "bio"]});
-        if(typeof committer === null){
-          throw new HttpErrors.InternalServerError('Try after updating data.');
-        }
+    let contributors = await this.githubUserRepository.find({where: {display: true}, fields: ["login_name", "avatar_url", "bio", "contributesFor"]});
+    for (const contributor of contributors) {
+      if(contributor.contributesFor.includes(<string>repo?.full_name)){
         let member = {
-          name: committer.login_name,
-          avatar: committer.avatar_url,
-          description: committer.bio,
+        name: contributor.login_name,
+        avatar: contributor.avatar_url,
+        description: contributor.bio,
         };
-        if(member.description.length === 0) member.description = '我爱万志远';
+        if(member.description.length === 0) member.description = '我爱万志远';//placeholder
         if(!result.includes(member)){
           result.push(member);
         }
       }
     }
+    // for (const prSender of prSenders) {
+    //   let member = {
+    //     name: prSender.login_name,
+    //     avatar: prSender.avatar_url,
+    //     description: prSender.bio,
+    //   };
+    //   if(member.description.length === 0) member.description = '我爱万志远';//placeholder
+    //   if(!result.includes(member)){
+    //     result.push(member);
+    //   }
+    // }
+    // for (const issueSender of issueSenders) {
+    //   let member = {
+    //     name: issueSender.login_name,
+    //     avatar: issueSender.avatar_url,
+    //     description: issueSender.bio,
+    //   };
+    //   if(member.description.length === 0) member.description = '我爱万志远';
+    //   if (!result.includes(member)){
+    //     result.push(member);
+    //   }
+    // }
+    // for (const commit of allCommits) {
+    //   if(commit.author_id != undefined){
+    //     let committer = await this.githubUserRepository.findById(commit.author_id, {fields: ["login_name", "avatar_url", "bio"]});
+    //     if(typeof committer === null){
+    //       throw new HttpErrors.InternalServerError('Try after updating data.');
+    //     }
+    //     let member = {
+    //       name: committer.login_name,
+    //       avatar: committer.avatar_url,
+    //       description: committer.bio,
+    //     };
+    //     if(member.description.length === 0) member.description = '我爱万志远';
+    //     if(!result.includes(member)){
+    //       result.push(member);
+    //     }
+    //   }
+    // }
+
     return result;
   }
 
@@ -329,8 +345,8 @@ export class MemberController {
         if (PR.is_merged) {
           result.push({
             time: <string>PR.merged_at,
-            event: <string>PR.merged_by_user + ' merges 1 pull request of ' + PR.pr_sender_name,
-            memberName: <string>PR.merged_by_user,
+            event: '1 pull request of ' + PR.pr_sender_name + ' is merged',
+            memberName: <string>PR.pr_sender_name,
           });
         }
         else {
