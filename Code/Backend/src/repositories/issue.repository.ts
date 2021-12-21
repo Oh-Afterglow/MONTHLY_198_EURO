@@ -23,8 +23,6 @@ export class IssueRepository extends DefaultCrudRepository<
     @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CommentsIssueRepository') protected commentsIssueRepositoryGetter: Getter<CommentsIssueRepository>, @repository.getter('GithubUserRepository') protected githubUserRepositoryGetter: Getter<GithubUserRepository>, @repository.getter('LabelRepository') protected labelRepositoryGetter: Getter<LabelRepository>,
   ) {
     super(Issue, dataSource);
-    this.labels = this.createHasManyRepositoryFactoryFor('labels', labelRepositoryGetter,);
-    this.registerInclusionResolver('labels', this.labels.inclusionResolver);
     this.issue_commenter = this.createHasManyThroughRepositoryFactoryFor('issue_commenter', githubUserRepositoryGetter, commentsIssueRepositoryGetter,);
     this.registerInclusionResolver('issue_commenter', this.issue_commenter.inclusionResolver);
   }

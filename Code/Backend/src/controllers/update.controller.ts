@@ -3,7 +3,7 @@ import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullReposi
 import { get, HttpErrors, response } from '@loopback/rest';
 import {authenticate} from "@loopback/authentication";
 import {SecurityBindings, securityId, UserProfile} from "@loopback/security";
-import {repository} from "@loopback/repository";
+import {EntityNotFoundError, repository} from "@loopback/repository";
 import {Octokit} from "@octokit/core";
 import { GithubUserRepository } from '../repositories';
 import { UserRepository} from "@loopback/authentication-jwt";
@@ -24,13 +24,15 @@ export class UpdateController {
       protected issueRepository: IssueRepository,
       @repository(PullRepository)
       protected pullRepository:PullRepository,
+      @repository(LabelRepository)
+      protected labelRepository: LabelRepository,
       @repository(UserRepository)
       protected userRepository: UserRepository,
-      protected octokit = new Octokit(),
+      protected octokit = new Octokit({ auth: 'Your-GitHub-Token' }),
 
   ) {}
 
-  @authenticate('jwt')
+  // @authenticate('jwt')
   @get('/update', {
     responses: {
       '200': {
@@ -46,15 +48,15 @@ export class UpdateController {
     }
   })
   async update(
-      @inject(SecurityBindings.USER)
-          currentUserProfile: UserProfile,
+      // @inject(SecurityBindings.USER)
+      //     currentUserProfile: UserProfile,
   ): Promise<boolean>{
-    let currentUserID = currentUserProfile[securityId];
-    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
-    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
-    if(!permitViewList) return true;
+    // let currentUserID = currentUserProfile[securityId];
+    // let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    // let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
+    // if(!permitViewList) return true;
     try{
-      for (const project of <string[]>permitViewList?.repo_view_list) {
+      for (const project of ['pytorch/pytorch'] /*<string[]>permitViewList?.repo_view_list*/) {
 
         let owner = project.split('/')[0];
         let repo = project.split('/')[1];
@@ -65,9 +67,10 @@ export class UpdateController {
 
         /*完成projrepo表的更新 */
         await this.addOrUpdateRepos(true, repoResponse);
-
-        // update contributors
         let page_num = 1;
+
+        //update contributors
+        
         while (true){
           let contributorResponse = await this.octokit.request("GET /repos/{owner}/{repo}/contributors", {
             owner: owner,
@@ -76,11 +79,12 @@ export class UpdateController {
             per_page: 100
           });//get each page
           if(page_num > 40 || contributorResponse.data.length == 0) {
-            page_num = 0;
+            console.log(page_num);
+            page_num = 1;
             break;
           }
-          page_num ++;
           await this.updateOrAddUsers(contributorResponse, project, page_num == 1);
+          page_num ++;
         }//only fetch detailed info for the first 100 contributors
 
         let allNewFetched = false;
@@ -91,32 +95,41 @@ export class UpdateController {
             repo: repo,
             page: page_num,
             per_page: 100,
-            since: new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000).toTimeString(),//within one year
+            // since: new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000).toString(),//within one year
           })
           if(page_num > 100 || commitsResponse.data.length == 0) {
-            page_num = 0;
+            console.log(page_num);
+            page_num = 1;
             break;
           }
-          page_num ++;
           for (const commit of commitsResponse.data) {//for each page, get each commit
-            let commitStorage = await this.commitRepository.findById(commit.sha);
+            let commitStorage;
+            try{
+              commitStorage = await this.commitRepository.findById(commit.sha);
+            } catch (Error){
+              if(Error instanceof EntityNotFoundError) commitStorage = null;
+              else throw Error;
+            }
             if(!commitStorage){
+              let name = commit.author ? commit.author.login : ( commit.commit.author ? commit.commit.author.name : 'test');
+              if(!name) name = 'empty';
               await this.commitRepository.create({
                 sha: commit.sha,
                 url: commit.html_url,
                 author_id: commit.author ? commit.author.id : undefined,
-                author_name: commit.author ? commit.author.login : ( commit.commit.author ?commit.commit.author.name : ''),
+                author_name: name,
                 author_email: commit.commit.author ? commit.commit.author.email:'',
                 updated_at: commit.commit.author ? commit.commit.author.date : '2020-12-20T17:44:07Z',//it is supposed not to be a null value
                 message: commit.commit.message,
                 repos_id: repoResponse.data.id
               });
             } else {//only get new commits, no updates
-              allNewFetched = true;
-              break;
+              // allNewFetched = true;
+              // break;
             }
-            if(allNewFetched) break;
+            // if(allNewFetched) break;
           }
+          page_num ++;
         }
 
         //update issues along with labels
@@ -127,15 +140,25 @@ export class UpdateController {
             state: 'all',
             per_page: 100,
             page: page_num,
+            since: new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000).toString()
           });
+          page_num ++;
           if(page_num > 60 || issuesResponse.data.length == 0){
-            page_num = 0;
+            console.log(page_num);
+            page_num = 1;
             break;
           }
           for (const issue of issuesResponse.data) {
-            let issueStorage = await this.issueRepository.findById(issue.id);
+            let issueStorage;
+            try{
+              issueStorage = await this.issueRepository.findById(issue.id);
+            } catch (Error){
+              if(Error instanceof EntityNotFoundError) issueStorage = null;
+              else throw Error;
+            }
 
             if(!issueStorage){
+
               issueStorage = await this.issueRepository.create({
                 id: issue.id,
                 number: issue.number,
@@ -143,7 +166,7 @@ export class UpdateController {
                 title: issue.title,
                 state: issue.state,
                 is_locked: issue.locked,
-                body: issue.body? issue.body: '',
+                body: issue.body? issue.body: 'test',
                 created_at: issue.created_at,
                 updated_at: issue.updated_at,
                 closed_at: issue.closed_at ? issue.closed_at : undefined,
@@ -152,18 +175,16 @@ export class UpdateController {
                 user_id: issue.user ? issue.user.id : 65600975,
                 user_name: issue.user ? issue.user.login : 'pytorch',
               });
-              for (const label of issue.labels) {
-                if(typeof label != "string")
-                  issueStorage.labels.push(new Label({
-                    id: <number>label.id,
-                    name: <string>label.name,
-                    color: <string>label.color,
-                    description: <string>label.description,
-                  }));
-              }
+
               await this.issueRepository.save(issueStorage);
 
-              let user = await this.githubUserRepository.findById(<number>issueStorage.user_id);
+              let user;
+              try{
+                user = await this.githubUserRepository.findById(<number>issueStorage.user_id);
+              } catch (Error){
+                if(Error instanceof EntityNotFoundError) user = null;
+                else throw Error;
+              }
               if(!user && issue.user){//if contributor is not stored
                 let orgResponse = await this.octokit.request("GET /users/{username}/orgs", {
                   username: issue.user.login
@@ -173,12 +194,12 @@ export class UpdateController {
                   login_name: issue.user.login,
                   avatar_url: issue.user.avatar_url,
                   url: issue.user.html_url,
-                  email: '',
+                  email: 'test',
                   bio: '',
                   followers_count: 0,
                   following_count: 0,
-                  created_at: '',
-                  updated_at: '',
+                  created_at: new Date().toString(),
+                  updated_at: new Date().toString(),
                   public_repos_count: 0,
                   isOrg: false,
                   display: false,
@@ -186,6 +207,7 @@ export class UpdateController {
                   org_name: []
                 });
                 for (const org of orgResponse.data) {
+                  if(!user.org_name) user.org_name = [];
                   user.org_name.push(org.login);
                 }
                 await this.githubUserRepository.save(user);
@@ -195,6 +217,24 @@ export class UpdateController {
               issueStorage.updated_at = issue.updated_at;
               issueStorage.closed_at = issue.closed_at ? issue.closed_at : undefined;
               await this.issueRepository.save(issueStorage);
+            }
+            for (const label of issue.labels) {
+              if(typeof label != "string"){
+                let labelStorage = await this.labelRepository.findOne({where: {id: (<number>(label.id)).toString()}});
+                if(!labelStorage) await this.labelRepository.create({
+                  id: (<number>label.id).toString(),
+                  name: label.name,
+                  description: label.description ? label.description:'',
+                  issueId: [issue.id],
+                  color: label.color? label.color : ''
+                });
+                else {
+                  if(!labelStorage.issueId.includes(issue.id)){
+                    labelStorage.issueId.push(issue.id);
+                    await this.labelRepository.save(labelStorage);
+                  }
+                }
+              }
             }
           }
         }
@@ -207,14 +247,22 @@ export class UpdateController {
             state: 'all',
             per_page: 100,
             page: page_num,
+            since: new Date(new Date().getTime() - 365 * 24 * 60 * 60 * 1000).toString()
           });
-          if(page_num > 60 || pullResponse.data.length == 0){
-            page_num = 0;
+          if(pullResponse.data.length == 0){
+            console.log(page_num);
+            page_num = 1;
             break;
           }
-          page_num ++;
+
           for (const pull of pullResponse.data) {
-            let pullStorage = await this.pullRepository.findById(pull.id);
+            let pullStorage;
+            try{
+              pullStorage = await this.pullRepository.findById(pull.id);
+            } catch (Error){
+              if(Error instanceof EntityNotFoundError) pullStorage = null;
+              else throw Error;
+            }
             if(!pullStorage){
               pullStorage = await this.pullRepository.create({
                 id: pull.id,
@@ -223,7 +271,7 @@ export class UpdateController {
                 state: pull.state,
                 title: pull.title,
                 isLocked: pull.locked,
-                body: pull.body? pull.body : '',
+                body: pull.body? pull.body : 'test',
                 created_at: pull.created_at,
                 updated_at: pull.updated_at,
                 closed_at: pull.closed_at? pull.closed_at:undefined,
@@ -237,7 +285,7 @@ export class UpdateController {
             } else{
               pullStorage.state = pull.state;
               pullStorage.isLocked = pull.locked;
-              pullStorage.body = pull.body? pull.body : '';
+              pullStorage.body = pull.body? pull.body : 'test';
               pullStorage.title = pull.title;
               pullStorage.updated_at = pull.updated_at;
               pullStorage.closed_at = pull.closed_at? pull.closed_at:undefined;
@@ -245,12 +293,13 @@ export class UpdateController {
               await this.pullRepository.save(pullStorage);
             }
           }
+          page_num ++;
         }
 
 
       }
     } catch (Error){
-        console.log(Error);
+        console.log(Error.stack);
         return false;
     }
     return true;
@@ -260,9 +309,12 @@ export class UpdateController {
     let project = projectResponse.data
     let owner = project.owner.login;
     let repo = project.name;
-    let projInfo = await this.repoRepository.findOne({where: {full_name: project.full_name}});
-    if(!projInfo){
-      throw new HttpErrors.NotFound();
+    let projInfo;
+    try{
+      projInfo = await this.repoRepository.findOne({where: {full_name: project.full_name}});
+    } catch (Error){
+      if (Error instanceof EntityNotFoundError) projInfo = null;
+      else throw Error;
     }
     const lang = await this.octokit.request("GET /repos/{owner}/{repo}/languages", {
       owner: owner,
@@ -307,43 +359,49 @@ export class UpdateController {
   }
 
   async updateOrAddUsers(userResponses: Endpoints["GET /repos/{owner}/{repo}/contributors"]["response"], project: string | undefined, display: boolean){
+    let index = 0;
     for (const contributor of userResponses.data)
     {
-      let userResponse;
-      if(display) userResponse = await this.octokit.request("GET /users/{username}", {username: <string>contributor.login});
-      let contribStorage = await this.githubUserRepository.findById(<number>contributor.id);
+      index ++;
+      let userResponse, contribStorage;
+      if(display && index <= 20) userResponse = await this.octokit.request("GET /users/{username}", {username: <string>contributor.login});
+      try{
+         contribStorage = await this.githubUserRepository.findById(<number>contributor.id);
+      } catch (Error){
+        if(Error instanceof EntityNotFoundError) contribStorage = null;
+        else throw Error;
+      }
       let organizationResponse = await this.octokit.request("GET /users/{username}/orgs", {username: <string>contributor.login});
       let orgs = [];
       for (const org of organizationResponse.data) {
         orgs.push(org.login);
       }
       if (!contribStorage) {//if that user is not in db, add it
-        // @ts-ignore
         await this.githubUserRepository.create({
           login_name: <string>contributor.login,
           id: <number>contributor.id,
           avatar_url: <string>contributor.avatar_url,
           url: <string>contributor.html_url,
           name: '',
-          email: '',
+          email: 'test',
           //@ts-ignore
           bio: display ? (userResponse.data.bio == undefined? '' : (<string>userResponse.data.bio)):'',
           followers_count: 0,
           following_count: 0,
-          created_at: '',
-          updated_at: '',
+          created_at: new Date().toString(),
+          updated_at: new Date().toString(),
           public_repos_count: 0,
           isOrg: false,
           org_name: orgs,
-          contributesFor: project ? [] : [project],
-          display: display
+          contributesFor: project ? [project] : [],
+          display: display && index <= 20
         });
       } else {//else only update necessary fields
-        if(display) {
+        if(display && index <= 20) {
           // @ts-ignore
           contribStorage.updated_at = <string>userResponse.data.updated_at;
           // @ts-ignore
-          contribStorage.bio = userResponse.data.bio == null ? 'Arch BTW' : <string>contributor.bio;
+          contribStorage.bio = userResponse.data.bio == null ? '' : <string>contributor.bio;
           // @ts-ignore
           contribStorage.followers_count = <number>userResponse.data.followers;
           // @ts-ignore
@@ -352,16 +410,24 @@ export class UpdateController {
           contribStorage.public_repos_count = <number>userResponse.data.public_repos;
         }
         contribStorage.org_name = orgs;
-        contribStorage.display = display;
+        contribStorage.display = display && index <= 20;
         await this.githubUserRepository.save(contribStorage);
       }
-      if(display){
+      if(display && index <= 20){
         let personalRepoResponse = await this.octokit.request("GET /users/{username}/repos", {username: <string>contributor.login});
         for (const repo of personalRepoResponse.data) {
-          let repoResponse = await this.octokit.request("GET /repos/{owner}/{repo}", {
-            owner: <string>contributor.login,
-            repo: repo.name
-          });
+          let repoResponse;
+          try{
+            repoResponse = await this.octokit.request("GET /repos/{owner}/{repo}", {
+              owner: <string>contributor.login,
+              repo: repo.name
+            });
+          } catch (Error) {
+            if(Error.status >= '400' && Error.status < '500'){
+              continue;
+            } else throw Error;
+          }
+
           await this.addOrUpdateRepos(false, repoResponse);
         }
       }

@@ -91,8 +91,6 @@ export class Issue extends Entity {
   @hasMany(() => GithubUser, {through: {model: () => CommentsIssue, keyFrom: 'issue_id', keyTo: 'commenter_id'}})
   issue_commenter: GithubUser[];
 
-  @hasMany(() => Label)
-  labels: Label[];
 
   constructor(data?: Partial<Issue>) {
     super(data);

@@ -144,6 +144,8 @@ export class ProjectInfoController {
     protected pullRepository: PullRepository,
     @repository(UserRepository)
     protected userRepository: UserRepository,
+    @repository(LabelRepository)
+    protected labelRepository: LabelRepository,
   ) {}
 
   @authenticate('jwt')
@@ -407,9 +409,11 @@ export class ProjectInfoController {
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
     let result: {name: string, value: number}[] = [];
-    let allIssues = await this.issueRepository.find({where: {repos_id: repo?.id}, fields: ["labels"]});
+    let allIssues = await this.issueRepository.find({where: {repos_id: repo?.id}, fields: ["id"]});
+    let allLabels = await this.labelRepository.find();
     for (const issue of allIssues) {
-      for(const label of issue.labels){
+      for(const label of allLabels){
+        if(!label.issueId.includes(issue.id)) continue;
         let labelExists = false;
         for (const savedLabel of result) {
           if(savedLabel.name === label.name){
