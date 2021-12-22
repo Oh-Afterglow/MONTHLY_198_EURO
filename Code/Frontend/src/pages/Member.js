@@ -101,28 +101,10 @@ const Member = ({ projectName }) => {
         console.error(e);
       }
     }
-      const f4 = async () => {
-        try {
-          const data = await request.get('/member/projects', {
-            projectName,
-          });
-          if (data instanceof Array) {
-            setProjects(data);
-            console.log(data)
-          } else {
-            throw new Error('Invalid data');
-          }
-        } catch (e) {
-          // TODO: handle error
-          console.error(e);
-        }
-      }
+   
       f1()
       f2()
       f3()
-      f4()
-
-
       },
     []
   );
@@ -133,7 +115,27 @@ const Member = ({ projectName }) => {
   };
 
 
-
+  async function searchmember(id){                                         //获取某个用户的所有管理pro
+    //这里向后端发请求获取
+    if(id!=-1){
+        let userid = members[id].name
+        console.log(userid)
+        try {
+            const data = await request.get('/member/projects', {
+                userid,
+            });
+            if (data instanceof Array) {
+              setProjects(data);
+            } else {
+              throw new Error('Invalid data');
+            }
+          } catch (e) {
+            // TODO: handle error
+            console.error(e);
+          }
+    }
+  }
+  
   const [selectedMember, setSelectedMember] = useState(-1);
   const activities = [
     { time: '2020/11/11', activity: 'make a commit' },
@@ -155,6 +157,16 @@ const Member = ({ projectName }) => {
     border:'0px solid red'
   };
 
+  let UsercardStyleoutline = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: '1rem 2rem 0 2rem',
+    marginTop: '1rem',
+    minHeight: '6rem',
+    border:'2px solid blue'
+  };
+
   const ProjectcardStyle = {
     display: 'flex',
     flexDirection: 'row',
@@ -164,14 +176,25 @@ const Member = ({ projectName }) => {
     minHeight: '8rem',
   };
 
+  const ProjectcardStyleoutline = {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: '1rem 2rem 0 2rem',
+    margin: '1rem 1rem 0 0',
+    minHeight: '8rem',
+    border:'2px solid blue'
+  };
+
+
   const memberCards = members.map((member, id) => (
     <>
       <MemberCard
         key={member.name}
         data={{ ...member, activities }}
         showActivities={true}
-        cardStyle={UsercardStyle}
-        onClick={() => setSelectedMember(selectedMember === id ? -1 : id)}
+        cardStyle={selectedMember!== id ?UsercardStyle:UsercardStyleoutline}
+        onClick={() =>   {setSelectedMember(selectedMember === id ? -1 : id),searchmember(id)}}
       />
       {selectedMember === id && <ActivityList data={activities} />}
     </>

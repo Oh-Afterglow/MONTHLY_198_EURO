@@ -122,83 +122,124 @@ export class MemberController {
   ): Promise<{name: string, value: number}[]>{
     let currentUserID = currentUserProfile[securityId];
     let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    // console.log(currentUser);
     let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list', 'is_admin']});
     if(!permitViewList?.repo_view_list.includes(projectName) && !permitViewList?.is_admin){
       throw new HttpErrors.NotFound('Repository not found.');
     }
 
-
     let repo = await this.projRepoRepository.findOne({where: {full_name: projectName}, fields: ["id", "full_name"]});
+    // console.log(repo);
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
     let result = [{
       name: 'individual',
       value: 0,
-    }, {
-      name: <string>repo?.full_name.split('/')[0],
+    },{
+      name: projectName.split('/')[0],
       value: 0,
     }];
 
-    let prSender = await this.projRepoRepository.pr_sender(<number>repo?.id).find({fields: ["org_name", "id"]});
-    let issueSender = await this.projRepoRepository.issue_adder(<number>repo?.id).find({fields: ["org_name", "id"]});
-    let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["author_id", "author_email"]});
-    let memberList = prSender;
-    let unregisteredMemberList: string[] = [];
-    for (let i = 0; i < issueSender.length; i++) {
-      if(!memberList.includes(issueSender[i])){
-        memberList.push(issueSender[i]);
-      }
-    }
-    for (let i = 0; i < allCommits.length; i++){
-      if(allCommits[i].author_id != undefined){
-        let committer = await this.githubUserRepository.findById(<number>allCommits[i].author_id, {fields: ["org_name", "id"]});
-        if(typeof committer === null){
-          throw new HttpErrors.InternalServerError('Try after updating the data');
+    let contributors = await this.githubUserRepository.find({fields: ["contributesFor", "org_name"]});
+    for (const contributor of contributors) {
+      if(contributor.contributesFor?.includes(projectName)){
+        if(contributor.org_name === undefined || contributor.org_name.length == 0){
+          result[0].value++;
+          continue;
         }
-        if(!memberList.includes(<GithubUser>committer)){
-            memberList.push(<GithubUser>committer);
+        if(contributor.org_name.includes(result[1].name)){
+          result[1].value++;
+          continue;
         }
-      }
-      else {
-        if(unregisteredMemberList.includes(<string>allCommits[i].author_email)){
-          result[1].value ++;
-          unregisteredMemberList.push(<string>allCommits[i].author_email);
-        }
-      }
-    }
-
-    for (let i = 0; i < memberList.length; i++) {
-      if(memberList[i].org_name === undefined) memberList[i].org_name = [];
-      // @ts-ignore
-      if(memberList[i].org_name.length === 0){
-        result[0].value ++;
-        continue;
-      }
-      // @ts-ignore
-      memberList[i].org_name.forEach(item => {
-        let j;
-        for (j = 0; j < result.length; j++) {
-          if(result[j].name == item){
-            result[j].value++;
-            break;
+        for(const org of contributor.org_name){
+          let i;
+          for(i = 0; i < result.length; i++){
+            if(result[i].name == org){
+              result[i].value++;
+              break;
+            }
+          }
+          if(i == result.length){
+            result.push({
+              name: org,
+              value: 1
+            });
           }
         }
-        if(j === result.length)
-          result.push({
-            name: item,
-            value: 1,
-          });
-      });
+      }
     }
-    return result;
+  
+    let resultNew : typeof result = [{
+      name: 'others',
+      value: 0,
+    }];
+    result.forEach(org => {//display organization with too little contributor together as 'others'
+      if(org.value / contributors.length >= 0.01){
+        resultNew.push(org);
+      }
+      else resultNew[0].value += org.value;
+    });  
+
+    // let prSender = await this.projRepoRepository.pr_sender(<number>repo?.id).find({fields: ["org_name", "id"]});
+    // let issueSender = await this.projRepoRepository.issue_adder(<number>repo?.id).find({fields: ["org_name", "id"]});
+    // let allCommits = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["author_id", "author_email"]});
+    // let memberList = prSender;
+    // let unregisteredMemberList: string[] = [];
+    // for (let i = 0; i < issueSender.length; i++) {
+    //   if(!memberList.includes(issueSender[i])){
+    //     memberList.push(issueSender[i]);
+    //   }
+    // }
+    // for (let i = 0; i < allCommits.length; i++){
+    //   if(allCommits[i].author_id != undefined){
+    //     let committer = await this.githubUserRepository.findById(<number>allCommits[i].author_id, {fields: ["org_name", "id"]});
+    //     if(typeof committer === null){
+    //       throw new HttpErrors.InternalServerError('Try after updating the data');
+    //     }
+    //     if(!memberList.includes(<GithubUser>committer)){
+    //         memberList.push(<GithubUser>committer);
+    //     }
+    //   }
+    //   else {
+    //     if(unregisteredMemberList.includes(<string>allCommits[i].author_email)){
+    //       result[1].value ++;
+    //       unregisteredMemberList.push(<string>allCommits[i].author_email);
+    //     }
+    //   }
+    // }
+
+    // for (let i = 0; i < memberList.length; i++) {
+    //   if(memberList[i].org_name === undefined) memberList[i].org_name = [];
+    //   // @ts-ignore
+    //   if(memberList[i].org_name.length === 0){
+    //     result[0].value ++;
+    //     continue;
+    //   }
+    //   // @ts-ignore
+    //   memberList[i].org_name.forEach(item => {
+    //     let j;
+    //     for (j = 0; j < result.length; j++) {
+    //       if(result[j].name == item){
+    //         result[j].value++;
+    //         break;
+    //       }
+    //     }
+    //     if(j === result.length)
+    //       result.push({
+    //         name: item,
+    //         value: 1,
+    //       });
+    //   });
+    // }
+    return resultNew;
   }
 
   @authenticate('jwt')
   @get('/member/projects')
   @response(200, MEMBER_PROJ)
   async memberProject(
-      @param.query.string('memberName') memberName: string,
+      @param.query.string('userid') memberName: string,
   ): Promise<{
     name: string,
     description: string,
@@ -208,10 +249,10 @@ export class MemberController {
   }[]>{
     let result = [];
     let member = await this.githubUserRepository.findOne({where: {login_name: memberName}, fields: ["id"]});
-    if(typeof member === null){
+    if(!memberName || typeof member === null){
       throw new HttpErrors.NotFound('Member not found. Is this name a login name of GitHub user?');
     }
-    let repos = await this.projRepoRepository.find({where: {owner_id: member?.id}, fields: ["full_name", "updated_at", "description", "star_num", "language"]});
+    let repos = await this.projRepoRepository.find({where: {owner_id: member?.id}, fields: ["full_name", "updated_at", "description", "star_num", "language"], order: ["updated_at DESC"]});
     for (const repo of repos) {
       if(typeof repo.description === undefined) repo.description = 'SRE is so interesting!';
       if(repo.language === undefined) repo.language = 'typescript';
@@ -250,11 +291,11 @@ export class MemberController {
     let result: {name: string, avatar: string, description: string}[] = [];
     let contributors = await this.githubUserRepository.find({where: {display: true}, fields: ["login_name", "avatar_url", "bio", "contributesFor"]});
     for (const contributor of contributors) {
-      if((<string[]>(contributor.contributesFor)).includes(<string>repo?.full_name)){
+      if((<string[]>(contributor.contributesFor)).includes(projectName)){
         let member = {
-        name: contributor.login_name,
-        avatar: contributor.avatar_url,
-        description: contributor.bio ? contributor.bio : '',
+          name: contributor.login_name,
+          avatar: contributor.avatar_url,
+          description: contributor.bio === undefined? '' : contributor.bio,
         };
         // if(member.description.length === 0) member.description = '我爱万志远';//placeholder
         if(!result.includes(member)){
@@ -324,24 +365,15 @@ export class MemberController {
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
-    let allCommit = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at", "author_id", "author_name"]});
+    let allCommit = await this.commitRepository.find({where: {repos_id: repo?.id}, fields: ["updated_at", "author_id", "author_name"], limit: 10});
     for (const commit of allCommit) {
-      let name: string;
-      if(commit.author_id != undefined){
-        let member = await this.githubUserRepository.findById(commit.author_id, {fields: ["login_name"]});
-        if(typeof member === null){
-          throw new HttpErrors.InternalServerError('Try after updating data.');
-        }
-        name = member.login_name;
-      }
-      else name = commit.author_name;
       result.push({
         time: commit.updated_at,
-        event: name + " submits 1 commit to the project.",
-        memberName: name,
+        event: commit.author_name + " submits 1 commit to the project.",
+        memberName: commit.author_name,
       });
     }
-    let allPr = await this.pullRepository.find({where: {repos_id: repo?.id}, fields: ["created_at", "closed_at", "merged_at", "updated_at", "merged_by_user", "pr_sender_name", "is_merged", "state"]});
+    let allPr = await this.pullRepository.find({where: {repos_id: repo?.id}, fields: ["created_at", "closed_at", "merged_at", "updated_at", "merged_by_user", "pr_sender_name", "is_merged", "state"], limit: 10});
     for (const PR of allPr) {
       result.push({
         time: PR.created_at,
@@ -372,7 +404,7 @@ export class MemberController {
         });
       }
     }
-    let allIssues = await this.issueRepository.find({where: {repos_id: repo?.id}, fields: ["created_at", "closed_at", "state", "user_name"]});
+    let allIssues = await this.issueRepository.find({where: {repos_id: repo?.id}, fields: ["created_at", "closed_at", "state", "user_name"], limit: 10});
     for (const issue of allIssues) {
       result.push({
         time: issue.created_at,
