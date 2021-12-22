@@ -439,11 +439,7 @@ const Dashboard = ({ projectName }) => {
           const data = await request.get('/project/numbers', {
             projectName,
           });
-          if (data instanceof Array) {
             setProjectnumber(data);
-          } else {
-            throw new Error('Invalid data');
-          }
         } catch (e) {
           // TODO: handle error
           console.error(e);
