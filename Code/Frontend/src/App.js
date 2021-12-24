@@ -32,13 +32,9 @@ export default function App() {
         <Route path='/' element={<Dashboard projectName={'pytorch/pytorch'}/>} />
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
-<<<<<<< HEAD
-        <Route path='/member' element={<Member />} />
         <Route path='/custom' element={<CustomCard />} />
-=======
         <Route path='/member' element={<Member  projectName={'pytorch/pytorch'}/>} />
         <Route path='/admin' element={<Admin />} />
->>>>>>> cc503c739c476c954cff446530a29a81aece3a36
       </Routes>
     </BrowserRouter>
   );
