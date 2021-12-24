@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard';
 import SignIn from './pages/Signin';
 import SignUp from './pages/Signup';
 import Member from './pages/Member';
-import CustomCard from './components/CustomCard';
+import CustomCard from './pages/CustomCard';
 import Admin from './pages/Admin';
 
 function Copyright() {
@@ -29,11 +29,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Dashboard projectName={'pytorch/pytorch'}/>} />
+        <Route path='/project/:name' element={<Dashboard />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
-        <Route path='/custom' element={<CustomCard />} />
-        <Route path='/member' element={<Member  projectName={'pytorch/pytorch'}/>} />
+        <Route path='/custom/:name' element={<CustomCard />} />
+        <Route path='/member/:name' element={<Member />} />
         <Route path='/admin' element={<Admin />} />
       </Routes>
     </BrowserRouter>

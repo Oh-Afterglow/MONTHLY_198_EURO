@@ -13,9 +13,15 @@ import { Card } from '@mui/material';
 import ChartSwitcher from '../components/ChartSwitcher';
 import SolvedurationChart from '../components/SolvedurationChart';
 import TagRankChart from '../components/TagRankChart';
+import {useParams} from 'react-router-dom'
 
-const Dashboard = ({ projectName }) => {
+const Dashboard = () => {
   // TODO: Replace with some default data
+  
+
+  const projectName = useParams().name;
+
+
   const [composeData, setComposeData] = React.useState([
     { name: 'Text', value: 100 },
     { name: 'Image', value: 200 },
@@ -443,11 +449,9 @@ const Dashboard = ({ projectName }) => {
           const data = await request.get('/project/numbers', {
             projectName,
           });
-          if (data instanceof Array) {
+          
             setProjectnumber(data);
-          } else {
-            throw new Error('Invalid data');
-          }
+          
         } catch (e) {
           // TODO: handle error
           console.error(e);

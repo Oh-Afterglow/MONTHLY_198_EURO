@@ -25,6 +25,7 @@ const CustomCard = () => {
   const [dataType, setDataType] = useState(0);
   const [paramName, setParamName] = useState('');
 
+  const projectName = useParams().name;
   const handleChange = (e) => setChartType(parseInt(e.target.value));
 
   const listName = [
@@ -87,6 +88,7 @@ const CustomCard = () => {
           const data = await request.get('/custom/customize', {
             "chartType": listName[dataType],
             "paramValue": dataType>=17?paramName:null,
+            "priject":projectName,
           },);
           if (data instanceof Array) {
             setData(data);
