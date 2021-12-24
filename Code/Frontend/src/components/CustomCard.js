@@ -13,7 +13,13 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import { PieChart, Pie, Sector,LineChart, Line,BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {ResponsiveContainer } from 'recharts';
+import CustomBar from '../components/CustomBar';
+import CustomLine from '../components/CustomLine';
+import CustomPie from '../components/CustomPie';
+import request from '../utils/request';
+
+
 const CustomCard = () => {
   const [chartType, setChartType] = useState(0); // 0: pie chart, 1: bar chart, 2: line chart
   const [dataType, setDataType] = useState(0);
@@ -45,7 +51,7 @@ const CustomCard = () => {
     'Personal_contribution_number_by_year',
   ];
 
-  const data = [
+  const [data,setData] = React.useState([
     {
       "name": "Page A",
       "value": 4000,
@@ -74,59 +80,63 @@ const CustomCard = () => {
       "name": "Page G",
       "value": 4000,
     }
-  ]
+  ])
+
+  const getdata = async () => {                                       //获取所有用户数据
+      try {
+          const data = await request.get('/custom/customize', {
+            "chartType": listName[dataType],
+            "paramValue": dataType>=17?paramName:null,
+          },);
+          if (data instanceof Array) {
+            setData(data);
+          } else {
+              throw new Error('Invalid data');
+          }
+      } catch (e) {
+      // TODO: handle error
+          console.error(e);
+      }
+  }
+
+  React.useEffect(() =>
+    {
+      getdata();
+    },
+    [dataType]);
+
 
   const listItems = listName.map((item, id) => (
-    <ListItemButton key={item} onClick={() => setDataType(id)}>
+    id==dataType?
+    <ListItemButton key={item} onClick={() => setDataType(id)}  style={{backgroundColor:"#CCFFCC"}}>
+      {item}
+    </ListItemButton>
+    :<ListItemButton key={item} onClick={() => setDataType(id)}>
       {item}
     </ListItemButton>
   ));
 
   const handleSubmit = () => {
     console.log(chartType, dataType, paramName);
+    getdata();
   };
 
   return (
     <Layout>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={8}>
-          <ResponsiveContainer width="40%" height="20%">
-          <BarChart width={730} height={250} data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
-          </BarChart>
-          </ResponsiveContainer>
 
-          <ResponsiveContainer width="40%" height="20%">
-          <LineChart
-            width={500}
-            height={300}
-            data={data}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="value" stroke="#8884d8" />
-          </LineChart>
-          </ResponsiveContainer>
+          {(chartType===0)&&<ResponsiveContainer width="40%" height="20%">
+            <CustomBar data={data}/>
+          </ResponsiveContainer>}
 
-          <ResponsiveContainer width="40%" height="20%">
-          <PieChart width={400} height={400}>
-            <Pie data={data} dataKey="value" cx="50%" cy="50%" outerRadius={60} fill="#8884d8"  label/>
-          </PieChart>
-          </ResponsiveContainer>
+          {(chartType===1)&&<ResponsiveContainer width="40%" height="20%">
+            <CustomLine data={data}/>
+          </ResponsiveContainer>}
+
+          {(chartType===2)&&<ResponsiveContainer width="40%" height="20%">
+            <CustomPie data={data}/>
+          </ResponsiveContainer>}
 
         </Grid>
 
