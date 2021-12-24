@@ -1,23 +1,12 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
-  post,
   param,
   get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response, ResponseObject, OperationObject, HttpErrors,
+  response, ResponseObject, HttpErrors,
 } from '@loopback/rest';
-import {Issue, IssueRelations, ProjRepo, Pull, PullRelations} from '../models';
+import {Issue, IssueRelations, Pull, PullRelations} from '../models';
 import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullRepository, CommitRepository, LabelRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import {inject} from "@loopback/core";

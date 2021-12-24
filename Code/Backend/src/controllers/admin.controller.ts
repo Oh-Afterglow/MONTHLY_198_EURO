@@ -1,23 +1,14 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
   post,
   param,
   get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
   requestBody,
   response, HttpErrors,
 } from '@loopback/rest';
-import {UserRepository, User} from "@loopback/authentication-jwt";
+import {UserRepository} from "@loopback/authentication-jwt";
 import {ProjRepoRepository, UserExtensionRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import {ALL_MEMBERS as ALL_USERS, MEMBER_PROJ as PROJECTS} from "./member.controller";//reusing response objects
