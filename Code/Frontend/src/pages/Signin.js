@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { BrowserRouter, Routes, Route ,useNavigate } from 'react-router-dom';
 
 import request from '../utils/request';
 
@@ -36,6 +37,7 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const history = useNavigate()
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -50,6 +52,8 @@ export default function SignIn() {
       console.log(data);
       console.log(data.token)
       sessionStorage.setItem("token",data.token)
+      if(sessionStorage.getItem("token"))
+        history('/main')
       // TODO: after login
     } catch (e) {
       // TODO: handle exception

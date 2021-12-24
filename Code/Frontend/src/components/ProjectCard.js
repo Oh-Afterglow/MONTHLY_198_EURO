@@ -11,6 +11,7 @@ const ProjectCard = ({ data ,onClick,cardStyle}) => {
   const { name, description, major, stars, lastUpdate } = data;
 
   return (
+   
     <Card style={cardStyle}  onClick={onClick}>
       <div  style={{display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
         <div>
@@ -26,6 +27,7 @@ const ProjectCard = ({ data ,onClick,cardStyle}) => {
         </div>
       </div>
     </Card>
+    
   );
 };
 

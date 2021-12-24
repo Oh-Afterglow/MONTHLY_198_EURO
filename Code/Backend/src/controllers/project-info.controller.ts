@@ -1,23 +1,12 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
-  post,
   param,
   get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response, ResponseObject, OperationObject, HttpErrors,
+  response, ResponseObject, HttpErrors,
 } from '@loopback/rest';
-import {Issue, IssueRelations, ProjRepo, Pull, PullRelations} from '../models';
+import {Issue, IssueRelations, Pull, PullRelations} from '../models';
 import {ProjRepoRepository, UserExtensionRepository, IssueRepository, PullRepository, CommitRepository, LabelRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import {inject} from "@loopback/core";
@@ -356,7 +345,7 @@ export class ProjectInfoController {
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
-    let solvedIssues = await this.issueRepository.find({where: {repos_id: repo?.id, state: 'closed'}, fields: ["closed_at"]});
+    let solvedIssues = await this.issueRepository.find({where: {repos_id: repo?.id, state: 'closed'}, fields: ["closed_at", "created_at"]});
     let result = timeFilterV2(solvedIssues);
     let unsolvedCount = await this.issueRepository.count({repos_id: repo?.id, state: 'open'});
     result[4] = unsolvedCount.count;
@@ -382,7 +371,7 @@ export class ProjectInfoController {
     if(typeof repo === null){
       throw new HttpErrors.InternalServerError('The repository data is missing.');
     }
-    let solvedPR = await this.pullRepository.find({where: {repos_id: repo?.id, state: 'closed'}, fields: ["closed_at"]});
+    let solvedPR = await this.pullRepository.find({where: {repos_id: repo?.id, state: 'closed'}, fields: ["closed_at", "created_at"]});
     let result = timeFilterV2(solvedPR);
     let unsolvedCount = await this.pullRepository.count({repos_id: repo?.id, state: 'open'});
     result[4] = unsolvedCount.count;
@@ -444,19 +433,19 @@ function timeFilter(all: {updated_at: string}[]): {
     name: '0',
     value: [{
       name: 'We love wzy, wzy is our goddess!',
-      value: [50, 0, 0, 0, 0, 0, 0],
+      value: [0, 0, 0, 0, 0, 0, 0],
     }, {value: [], name: '0'},{value: [], name: '0'}, {value: [], name: '0'}, {value: [], name: '0'}, {value: [], name: '0'}, {value: [], name: '0'}]
   });
   result.push({
     name: '1',
     value: [
-      { name: 'Sunday', value: [10, 0, 0, 0] },
-      { name: 'Monday', value: [10, 0, 0, 0] },
+      { name: 'Sunday', value: [0, 0, 0, 0] },
+      { name: 'Monday', value: [0, 0, 0, 0] },
       { name: 'Tuesday', value: [0, 0, 0, 0] },
-      { name: 'Wednesday', value: [10, 0, 0, 0] },
+      { name: 'Wednesday', value: [0, 0, 0, 0] },
       { name: 'Thursday', value: [0, 0, 0, 0] },
       { name: 'Friday', value: [0, 0, 0, 0] },
-      { name: 'Saturday', value: [10, 0, 0, 0] },
+      { name: 'Saturday', value: [0, 0, 0, 0] },
     ]
   });
   result.push({
@@ -500,29 +489,19 @@ function timeFilter(all: {updated_at: string}[]): {
 }
 
 function timeFilterV2(all: (Issue & IssueRelations | Pull & PullRelations)[]): number[]{
-  let result = [0,20, 0, 0, 0];
-  let today = new Date();
-  today.setTime(today.getTime() + 1000 * 60 * 60 * 24);
-  today.setHours(0, 0, 0, 0);
-  let weekAgo = new Date(today.getTime() - 7 * 1000 * 60 * 60 * 24);
-  let monthAgo = new Date(today.getTime() - 28 * 1000 * 60 * 60 * 24);//28 days ago
-  let halfYearAgo = new Date(today.getTime() - 4 * 7 * 6 * 1000 * 60 * 60 * 24);//6 months, regard 4 weeks as a month
-  let yearAgo = new Date(today.getTime() - 365 * 1000 * 60 * 60 * 24);
+  let result = [0, 0, 0, 0, 0];
+  
+  let weekAgo = 7 * 1000 * 60 * 60 * 24;
+  let monthAgo = 28 * 1000 * 60 * 60 * 24;//28 days ago
+  let halfYearAgo = 4 * 7 * 6 * 1000 * 60 * 60 * 24;//6 months, regard 4 weeks as a month
+  let yearAgo = 365 * 1000 * 60 * 60 * 24;
 
   for (const contrib of all) {
-    let time = new Date(<string>contrib.closed_at);
-    if(time >= yearAgo){
-      result[3]++;
-      if(time >= halfYearAgo){
-        result[2]++;
-        if(time >= monthAgo){
-          result[1]++;
-          if(time >= weekAgo){
-            result[0]++;
-          }
-        }
-      }
-    }
+    let time = new Date(<string>contrib.closed_at).getTime() - new Date(<string>contrib.created_at).getTime();
+    if(time < weekAgo) result[0]++;
+    else if(time < monthAgo) result[1]++;
+    else if(time < halfYearAgo) result[2]++;
+    else if(time < yearAgo) result[3]++;
   }
   return result;
 }

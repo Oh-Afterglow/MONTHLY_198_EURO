@@ -13,9 +13,15 @@ import { Card } from '@mui/material';
 import ChartSwitcher from '../components/ChartSwitcher';
 import SolvedurationChart from '../components/SolvedurationChart';
 import TagRankChart from '../components/TagRankChart';
+import {useParams} from 'react-router-dom'
 
-const Dashboard = ({ projectName }) => {
+const Dashboard = () => {
   // TODO: Replace with some default data
+  
+
+  const projectName = useParams().name;
+  sessionStorage.setItem("selectpro",projectName.split("/")[0]+"%2F"+projectName.split("/")[1])
+
   const [composeData, setComposeData] = React.useState([
     { name: 'Text', value: 100 },
     { name: 'Image', value: 200 },
@@ -25,7 +31,11 @@ const Dashboard = ({ projectName }) => {
     { commit: '10', issue: '23', pullRequest: '244' }
   ]);
 
-
+ const [tagdata,setTagdata] =  React.useState([
+    { name: 'log4j2', value: 10 },
+    { name: 'server', value: 15 },
+    { name: 'spring', value: 25 },
+  ]);
 
 
   const [choosemode, setchoosemode] = useState(0);
@@ -439,7 +449,25 @@ const Dashboard = ({ projectName }) => {
           const data = await request.get('/project/numbers', {
             projectName,
           });
+          
             setProjectnumber(data);
+          
+        } catch (e) {
+          // TODO: handle error
+          console.error(e);
+        }
+      }
+
+      const f10 =async () => {
+        try {
+          const data = await request.get('/project/issue/tag', {
+            projectName,
+          });
+          if (data instanceof Array) {
+            setTagdata(data);
+          } else {
+            throw new Error('Invalid data');
+          }
         } catch (e) {
           // TODO: handle error
           console.error(e);
@@ -454,6 +482,7 @@ const Dashboard = ({ projectName }) => {
       f7();
       f8();
       f9();
+      f10();
       },
     []
   );
@@ -513,11 +542,7 @@ const Dashboard = ({ projectName }) => {
           }
           chart1={
             <TagRankChart
-              data={[
-                { name: 'log4j2', value: 10 },
-                { name: 'server', value: 15 },
-                { name: 'spring', value: 20 },
-              ]}
+              data={tagdata}
               style={barChartStyle}
             />
           }

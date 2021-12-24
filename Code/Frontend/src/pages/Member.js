@@ -9,8 +9,9 @@ import ProjectCard from '../components/ProjectCard';
 import { Card } from '@mui/material';
 import ActivityList from '../components/ActivityList';
 
-const Member = ({ projectName }) => {
+const Member = () => {
   // TODO: Replace with some default data
+  const projectName = useParams().name;
   const [composeData, setComposeData] = React.useState([
     { name: 'Facebook', value: 50 },
     { name: 'Google', value: 20 },
