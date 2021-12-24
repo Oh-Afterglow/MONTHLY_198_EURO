@@ -88,7 +88,7 @@ const CustomCard = () => {
           const data = await request.get('/custom/customize', {
             "chartType": listName[dataType],
             "paramValue": dataType>=17?paramName:null,
-            "priject":projectName,
+            "project":projectName,
           },);
           if (data instanceof Array) {
             setData(data);

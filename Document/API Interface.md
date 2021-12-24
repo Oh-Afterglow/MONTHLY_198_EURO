@@ -370,8 +370,8 @@ const sample: response = [
 - 用户自定义文档
 
 ```ts
-type request = { chartType: string , paramValue: string}; 
-// chartType: 用户自定义情况的二十余种表格名；paramValue: 后四种表格所带查询需要的tag/用户名
+type request = { chartType: string , paramValue: string, project:string}; 
+// chartType: 用户自定义情况的二十余种表格名;paramValue: 后四种表格所带查询需要的tag/用户名(除了后四项外没此项); project：项目名
 'Commit_number_by_organization',
 'Commit_number_by_week',
 'Commit_number_by_year',
