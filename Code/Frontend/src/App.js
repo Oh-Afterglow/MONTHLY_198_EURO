@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import SignIn from './pages/Signin';
 import SignUp from './pages/Signup';
 import Member from './pages/Member';
+import CustomCard from './components/CustomCard';
 
 function Copyright() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/member' element={<Member />} />
+        <Route path='/custom' element={<CustomCard />} />
       </Routes>
     </BrowserRouter>
   );
