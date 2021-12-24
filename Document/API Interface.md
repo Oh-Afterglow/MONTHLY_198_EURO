@@ -365,3 +365,69 @@ const sample: response = [
 ];
 ```
 
+
+- custom/customize POST
+- 用户自定义文档
+
+```ts
+type request = { chartType: string , paramValue: string}; 
+// chartType: 用户自定义情况的二十余种表格名；paramValue: 后四种表格所带查询需要的tag/用户名
+'Commit_number_by_organization',
+'Commit_number_by_week',
+'Commit_number_by_year',
+'Issue_number_by_organization',
+'Issue_number_by_week',
+'Issue_number_by_year',
+'Pull_request_number_by_organization',
+'Pull_request_number_by_week',
+'Pull_request_number_by_year',
+'Open_issue_number_by_week',
+'Open_issue_number_by_year',
+'Closed_issue_number_by_week',
+'Closed_issue_number_by_year',
+'Open_pull_request_number_by_week',
+'Open_pull_request_number_by_year',
+'Closed_pull_request_number_by_week',
+'Closed_pull_request_number_by_year',
+'Tagged_issue_number_by_week',
+'Tagged_issue_number_by_year',
+'Personal_contribution_number_by_week',
+'Personal_contribution_number_by_year',
+
+type response = {
+  name: string;
+  value: value;
+}[];
+// 返回结构: 一个数组, 为了方便前端渲染，这里传回用户的所有可管理组件，每一项包含了 { name: 横坐标名,value:纵坐标值 } 
+const sample: response = [
+  {
+      "name": "Mon",
+      "value": 4000,
+    },
+    {
+      "name": "Tue",
+      "value": 7000,
+    },
+    {
+      "name": "Wed",
+      "value": 4000,
+    },
+    {
+      "name": "Thur",
+      "value": 2000,
+    },
+    {
+      "name": "Fri",
+      "value": 4000,
+    },
+    {
+      "name": "Sat",
+      "value": 3000,
+    },
+    {
+      "name": "Sun",
+      "value": 4000,
+    }
+];
+```
+

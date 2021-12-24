@@ -20,7 +20,8 @@
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^6.0.2",
-    "react-scripts": "latest"
+    "react-scripts": "latest",
+    "recharts": "^2.1.8"
   },
   "browserslist": {
     "production": [
