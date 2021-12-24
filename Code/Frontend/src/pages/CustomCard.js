@@ -129,20 +129,18 @@ const CustomCard = () => {
         <Grid item xs={12} sm={8}>
 
           {(chartType===0)&&<ResponsiveContainer width="40%" height="20%">
-            <CustomBar data={data}/>
-          </ResponsiveContainer>}
-
-          {(chartType===1)&&<ResponsiveContainer width="40%" height="20%">
-            <CustomLine data={data}/>
-          </ResponsiveContainer>}
-
-          {(chartType===2)&&<ResponsiveContainer width="40%" height="20%">
             <CustomPie data={data}/>
           </ResponsiveContainer>}
 
-        </Grid>
+          {(chartType===1)&&<ResponsiveContainer width="40%" height="20%">
+            <CustomBar data={data}/>
+          </ResponsiveContainer>}
 
-        
+          {(chartType===2)&&<ResponsiveContainer width="40%" height="20%">
+            <CustomLine data={data}/>
+          </ResponsiveContainer>}
+
+        </Grid>
         <Grid item xs={12} sm={4}>
           <FormControl component='fieldset'>
             <FormLabel component='legend'>Chart Type</FormLabel>
