@@ -41,13 +41,7 @@ const Admin = ({  }) => {
     ]);
 
     const [selectprojects, setSelectprojects] = useState([      //用户的pro
-        {
-            name: 'blockchainCourse1',
-            description: '浙江大学 区块链与数字货币课程',
-            major: 'javascript',
-            star: '20',
-            lastupdate: 'Updated on 29 Jun 2020',
-        },
+        
     ]);
 
     const [projects, setProjects] = useState([                 //所有的pro

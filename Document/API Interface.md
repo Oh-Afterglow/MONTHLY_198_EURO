@@ -431,3 +431,33 @@ const sample: response = [
 ];
 ```
 
+- user/allproject GET
+- 获取用户所有项目
+
+```ts
+type request = { };      
+type response = {
+  name: string;
+  description: string;
+  major: string;
+  stars: number;
+  lastUpdate: string;
+}[];
+// 返回结构: 一个数组, 为了方便前端渲染，这里传回用户的所有可管理组件，每一项包含了 { name: 项目名, description: 描述, major: 最主要的语言, stars: 赞数, lastUpdate: 最后更新时间 } 
+const sample: response = [
+  {
+    name: 'Linux Kernel',
+    description: 'Linux Kernel is a Linux kernel development',
+    major: 'C',
+    stars: 100,
+    lastUpdate: '2020-01-01',
+  },
+  {
+    name: 'Facebook',
+    description: 'Facebook is a Facebook development',
+    major: 'Java',
+    stars: 300,
+    lastUpdate: '2020-01-02',
+  },
+];
+```

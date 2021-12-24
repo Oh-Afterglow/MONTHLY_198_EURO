@@ -20,7 +20,7 @@ const Dashboard = () => {
   
 
   const projectName = useParams().name;
-
+  sessionStorage.setItem("selectpro",projectName.split("/")[0]+"%2F"+projectName.split("/")[1])
 
   const [composeData, setComposeData] = React.useState([
     { name: 'Text', value: 100 },
