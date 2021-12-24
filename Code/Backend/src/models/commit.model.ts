@@ -24,8 +24,9 @@ export class Commit extends Entity {
 
   @property({
     type: 'string',
+    required: true,
   })
-  author_name?: string;
+  author_name: string;
 
   @property({
     type: 'string',
@@ -44,23 +45,24 @@ export class Commit extends Entity {
   })
   message: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  tree_sha: string;
+  // @property({
+  //   type: 'string',
+  //   required: true,
+  // })
+  // tree_sha: string;
+  //
+  // @property({
+  //   type: 'string',
+  //   required: true,
+  // })
+  // tree_content: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  tree_content: string;
-
-  @property({
-    type: 'array',
-    itemType: 'number',
-  })
-  label_ids?: string[];
+  // @property({
+  //   type: 'array',
+  //   itemType: 'number',
+  //   required: true,
+  // })
+  // label_ids: string[];
 
   @belongsTo(() => ProjRepo, {name: 'commit_belongs_to_repos'})
   repos_id: number;

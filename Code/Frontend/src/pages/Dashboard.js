@@ -11,6 +11,7 @@ import ProjectTable from '../components/ProjectTable';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Card } from '@mui/material';
 import ChartSwitcher from '../components/ChartSwitcher';
+import SolvedurationChart from '../components/SolvedurationChart';
 import TagRankChart from '../components/TagRankChart';
 
 const Dashboard = ({ projectName }) => {
@@ -20,6 +21,17 @@ const Dashboard = ({ projectName }) => {
     { name: 'Image', value: 200 },
   ]);
 
+  const [projectnumber, setProjectnumber] = React.useState([
+    { commit: '10', issue: '23', pullRequest: '244' }
+  ]);
+
+ const [tagdata,setTagdata] =  React.useState([
+    { name: 'log4j2', value: 10 },
+    { name: 'server', value: 15 },
+    { name: 'spring', value: 25 },
+  ]);
+
+
   const [choosemode, setchoosemode] = useState(0);
   //为了降低代码量，这里使用的格式比较蠢，想的是后端把这里都返回过来，然后改图表粒度的时候就可以简单点
   const [commit, setcommit] = React.useState([
@@ -27,10 +39,7 @@ const Dashboard = ({ projectName }) => {
       name: '0',
       value: [
         //只有第一行的value有用,别的随意
-        {
-          name: 'X',
-          value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
-        },
+
         { name: 'mon', value: [10, 20, 30, 40, 50, 60, 70] },
         { value: [] },
         { value: [] },
@@ -45,7 +54,7 @@ const Dashboard = ({ projectName }) => {
       name: '1',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一周
-        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+
         { name: '1', value: [10, 20, 30, 40] },
         { name: '2', value: [60, 20, 30, 40] },
         { name: '3', value: [50, 20, 30, 40] },
@@ -59,10 +68,6 @@ const Dashboard = ({ projectName }) => {
       name: '2',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一月
-        {
-          name: 'X',
-          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
-        },
         { name: '1', value: [10, 20, 30, 40, 50, 60] },
         { name: '2', value: [10, 20, 30, 40, 50, 60] },
         { name: '3', value: [10, 20, 30, 40, 50, 60] },
@@ -79,10 +84,6 @@ const Dashboard = ({ projectName }) => {
       name: '0',
       value: [
         //只有第一行的value有用,别的随意
-        {
-          name: 'X',
-          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-        },
         { name: 'mon', value: [0, 0, 0, 0, 0, 0, 0] },
         { value: [] },
         { value: [] },
@@ -97,7 +98,6 @@ const Dashboard = ({ projectName }) => {
       name: '1',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一周
-        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
         { name: '1', value: [0, 0, 0, 0] },
         { name: '2', value: [0, 0, 0, 0] },
         { name: '3', value: [0, 0, 0, 0] },
@@ -111,10 +111,6 @@ const Dashboard = ({ projectName }) => {
       name: '2',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一月
-        {
-          name: 'X',
-          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
-        },
         { name: '1', value: [0, 0, 0, 0, 0, 0] },
         { name: '2', value: [0, 0, 0, 0, 0, 0] },
         { name: '3', value: [0, 0, 0, 0, 0, 0] },
@@ -131,10 +127,7 @@ const Dashboard = ({ projectName }) => {
       name: '0',
       value: [
         //只有第一行的value有用,别的随意
-        {
-          name: 'X',
-          value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
-        },
+
         { name: 'mon', value: [10, 10, 50, 40, 50, 60, 70] },
         { value: [] },
         { value: [] },
@@ -149,7 +142,7 @@ const Dashboard = ({ projectName }) => {
       name: '1',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一周
-        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+
         { name: '1', value: [10, 20, 30, 40] },
         { name: '2', value: [60, 20, 30, 40] },
         { name: '3', value: [50, 20, 30, 40] },
@@ -163,10 +156,7 @@ const Dashboard = ({ projectName }) => {
       name: '2',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一月
-        {
-          name: 'X',
-          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
-        },
+
         { name: '1', value: [10, 20, 30, 40, 50, 60] },
         { name: '2', value: [10, 20, 30, 40, 50, 60] },
         { name: '3', value: [10, 20, 30, 40, 50, 60] },
@@ -184,10 +174,7 @@ const Dashboard = ({ projectName }) => {
       name: '0',
       value: [
         //只有第一行的value有用,别的随意
-        {
-          name: 'X',
-          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-        },
+
         { name: 'mon', value: [10, 10, 50, 40, 50, 60, 70] },
         { value: [] },
         { value: [] },
@@ -202,7 +189,7 @@ const Dashboard = ({ projectName }) => {
       name: '1',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一周
-        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+
         { name: '1', value: [0, 10, 10, 10] },
         { name: '2', value: [10, 10, 10, 10] },
         { name: '3', value: [10, 10, 10, 10] },
@@ -216,10 +203,7 @@ const Dashboard = ({ projectName }) => {
       name: '2',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一月
-        {
-          name: 'X',
-          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
-        },
+
         { name: '1', value: [0, 0, 0, 10, 10, 10] },
         { name: '2', value: [0, 0, 0, 10, 10, 10] },
         { name: '3', value: [0, 0, 0, 10, 10, 10] },
@@ -235,11 +219,6 @@ const Dashboard = ({ projectName }) => {
     {
       name: '0',
       value: [
-        //只有第一行的value有用,别的随意
-        {
-          name: 'X',
-          value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
-        },
         { name: 'mon', value: [60, 30, 30, 40, 50, 60, 70] },
         { value: [] },
         { value: [] },
@@ -254,7 +233,6 @@ const Dashboard = ({ projectName }) => {
       name: '1',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一周
-        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
         { name: '1', value: [10, 20, 30, 40] },
         { name: '2', value: [60, 20, 30, 40] },
         { name: '3', value: [50, 20, 30, 40] },
@@ -268,10 +246,6 @@ const Dashboard = ({ projectName }) => {
       name: '2',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一月
-        {
-          name: 'X',
-          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
-        },
         { name: '1', value: [10, 20, 30, 40, 50, 60] },
         { name: '2', value: [10, 20, 30, 40, 50, 60] },
         { name: '3', value: [10, 20, 30, 40, 50, 60] },
@@ -288,10 +262,7 @@ const Dashboard = ({ projectName }) => {
       name: '0',
       value: [
         //只有第一行的value有用,别的随意
-        {
-          name: 'X',
-          value: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-        },
+
         { name: 'mon', value: [10, 10, 10, 10, 10, 10, 10] },
         { value: [] },
         { value: [] },
@@ -306,7 +277,7 @@ const Dashboard = ({ projectName }) => {
       name: '1',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一周
-        { name: 'X', value: ['week1', 'week2', 'week3', 'week4'] },
+
         { name: '1', value: [10, 10, 10, 10] },
         { name: '2', value: [10, 10, 10, 10] },
         { name: '3', value: [10, 10, 10, 10] },
@@ -320,10 +291,7 @@ const Dashboard = ({ projectName }) => {
       name: '2',
       value: [
         //这里的都需要用，具体格式是每一列的数字代表一月
-        {
-          name: 'X',
-          value: ['month1', 'month2', 'month3', 'month4', 'month5', 'month6'],
-        },
+
         { name: '1', value: [10, 10, 10, 10, 10, 10] },
         { name: '2', value: [10, 10, 10, 10, 10, 10] },
         { name: '3', value: [10, 10, 10, 10, 10, 10] },
@@ -335,9 +303,20 @@ const Dashboard = ({ projectName }) => {
     },
   ]);
 
-  React.useEffect(
-    () => async () => {
+  const [IssueSolveData, setIssueSolveData] = React.useState([
+      10,20,30,40,20
+  ]);
+
+  const [PrSolveData, setPrSolveData] = React.useState([
+      10,20,30,40,20
+  ]);
+
+  React.useEffect(() =>
+      {
+
+        const f1 = async () => {
       try {
+
         const data = await request.get('/project/compose', {
           projectName,
         });
@@ -350,8 +329,9 @@ const Dashboard = ({ projectName }) => {
         // TODO: handle error
         console.error(e);
       }
-    },
-    () => async () => {
+    }
+        const f2 = async () => {
+          console.log("2")
       try {
         const data = await request.get('/project/commit', {
           projectName,
@@ -365,8 +345,8 @@ const Dashboard = ({ projectName }) => {
         // TODO: handle error
         console.error(e);
       }
-    },
-    () => async () => {
+    }
+        const f3 =  async () => {
       try {
         const data = await request.get('/project/issue', {
           projectName,
@@ -380,8 +360,8 @@ const Dashboard = ({ projectName }) => {
         // TODO: handle error
         console.error(e);
       }
-    },
-    () => async () => {
+    }
+        const f4 = async () => {
       try {
         const data = await request.get('/project/pr', {
           projectName,
@@ -395,7 +375,111 @@ const Dashboard = ({ projectName }) => {
         // TODO: handle error
         console.error(e);
       }
-    },
+    }
+        const f5 = async () => {
+      try {
+        const data = await request.get('/project/issuewait', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setissuedifference(data);
+          console.log(data)
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    }
+        const f6 =async () => {
+      try {
+        const data = await request.get('/project/prwait', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setprdifference(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    }
+        const f7 =async () => {
+      try {
+        const data = await request.get('/project/issuesolve', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setIssueSolveData(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    }
+        const f8 =async () => {
+      try {
+        const data = await request.get('/project/prsolve', {
+          projectName,
+        });
+        if (data instanceof Array) {
+          setPrSolveData(data);
+        } else {
+          throw new Error('Invalid data');
+        }
+      } catch (e) {
+        // TODO: handle error
+        console.error(e);
+      }
+    }
+
+      const f9 =async () => {
+        try {
+          const data = await request.get('/project/numbers', {
+            projectName,
+          });
+          if (data instanceof Array) {
+            setProjectnumber(data);
+          } else {
+            throw new Error('Invalid data');
+          }
+        } catch (e) {
+          // TODO: handle error
+          console.error(e);
+        }
+      }
+
+      const f10 =async () => {
+        try {
+          const data = await request.get('/project/issue/tag', {
+            projectName,
+          });
+          if (data instanceof Array) {
+            setTagdata(data);
+          } else {
+            throw new Error('Invalid data');
+          }
+        } catch (e) {
+          // TODO: handle error
+          console.error(e);
+        }
+      }
+      f1();
+      f2();
+      f3();
+      f4();
+      f5();
+      f6();
+      f7();
+      f8();
+      f9();
+      f10();
+      },
     []
   );
 
@@ -421,7 +505,7 @@ const Dashboard = ({ projectName }) => {
   return (
     <Layout>
       <Grid item container direction='column' xs={12} sm={4}>
-        <NumberCard data={{ commit: '10', issue: '23', pullRequest: '244' }} />
+        <NumberCard data={projectnumber} />
         <PieChart
           title={'Project Composition'}
           data={composeData}
@@ -454,36 +538,58 @@ const Dashboard = ({ projectName }) => {
           }
           chart1={
             <TagRankChart
-              data={[
-                { name: 'log4j2', value: 10 },
-                { name: 'server', value: 15 },
-                { name: 'spring', value: 20 },
-              ]}
+              data={tagdata}
               style={barChartStyle}
             />
           }
         />
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
-        <BarChart
-          title={'Issue'}
-          mode={choosemode}
-          xname={'Time'}
-          yname={'Issue'}
-          xvalue={issue[choosemode].value}
-          xdifference={issuedifference[choosemode].value}
-          style={barChartStyle}
+      <ChartSwitcher
+          chart0={
+            <BarChart
+              title={'Issue'}
+              mode={choosemode}
+              xname={'Time'}
+              yname={'Issue'}
+              xvalue={issue[choosemode].value}
+              xdifference={issuedifference[choosemode].value}
+              style={barChartStyle}
+            />
+          }
+          chart1={
+            <SolvedurationChart
+              title={'Duration'}
+              xname={'Time'}
+              yname={'Mount'}
+              value={IssueSolveData}
+              style={barChartStyle}
+            />
+          }
+        />
+        <ChartSwitcher
+          chart0={
+            <BarChart
+              title={'Pr'}
+              mode={choosemode}
+              xname={'Time'}
+              yname={'Pr'}
+              xvalue={pr[choosemode].value}
+              xdifference={prdifference[choosemode].value}
+              style={barChartStyle}
+            />
+          }
+          chart1={
+            <SolvedurationChart
+              title={'Duration'}
+              xname={'Time'}
+              yname={'Mount'}
+              value={PrSolveData}
+              style={barChartStyle}
+            />
+          }
         />
 
-        <BarChart
-          title={'Pr'}
-          mode={choosemode}
-          xname={'Time'}
-          yname={'Pr'}
-          xvalue={pr[choosemode].value}
-          xdifference={prdifference[choosemode].value}
-          style={barChartStyle}
-        />
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
         <Card style={{ margin: '1rem 1rem 1rem 0' }}>

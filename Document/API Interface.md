@@ -49,8 +49,8 @@ type response = { commit: number; issue: number; pullRequest: number };
 const sample: response = { commit: 100, issue: 200, pullRequest: 300 };
 ```
 
-- /project/commit /project/issue /project/pr GET
-- 按照指定结构返回 commit, issue, pr 的数量，对于issue与pr，需要返回两个下面描述的数据结构，首先是已解决的pr与issue，之后则是未解决的数量，如在某个月中提出10个issue，被解决了6个，则在第一个数据结构中返回6，第二个中返回4。(结构在下面详细描述)
+- /project/commit /project/issue /project/pr /project/issuewait/project/prwait  GET
+- 按照指定结构返回 commit, issue, pr 的数量，对于issue与pr，/issue返回的是已解决的数量，/issuewait返回的是未解决的数量，pr同理(结构在下面详细描述)
 
 ```ts
 type request = { projectName: string };
@@ -115,7 +115,7 @@ const sample: response = [
 ];
 ```
 
-- /project/commit/tag GET
+- /project/issue/tag GET
 - 获取 commit 相关的 tag 的数量列表
 
 ```ts
@@ -203,3 +203,165 @@ const sample: response = [
   },
 ];
 ```
+
+- /project/issuesolve /project/prsolve  GET
+- 获取Pr与issue解决情况
+
+```ts
+type request = { projectName: string };
+type response = [];
+// 返回结构: 一个数组, 每一项代表在该段时间内解决的数量，目前设计为：周，月，半年，年，未解决
+const sample: response = [
+  10,20,30,40,20
+];
+```
+
+- /admin/alluser  GET
+- 获取所有本项目用户信息
+
+```ts
+type request = {  };
+type response = {
+    name: string
+    avatar: string 
+    description: string         //为了复用组件，这里是email，但用的description标签
+}[];
+// 返回结构: 一个数组, 每一项包含了 { name: 用户名, avatar:用户头像url,  description: 用户的email地址  }
+const sample: response = [
+    {
+        name: '张三',
+        avatar: 'https://avatars0.githubusercontent.com/u/8186664?s=460&v=4',
+        description: '12333@qq.com',
+    },
+    {
+        name: '李四',
+        avatar: 'https://avatars0.githubusercontent.com/u/8186664?s=460&v=4',
+        description: '234@qq.com',
+    },
+];
+```
+
+- /admin/allproject GET
+- 获取所有可管理的项目信息
+
+```ts
+type request = {  };
+type response = {
+  name: string;
+  description: string;
+  major: string;
+  stars: number;
+  lastUpdate: string;
+}[];
+// 返回结构: 一个数组, 每一项包含了 { name: 项目名, description: 描述, major: 最主要的语言, stars: 赞数, lastUpdate: 最后更新时间 }
+const sample: response = [
+  {
+    name: 'Linux Kernel',
+    description: 'Linux Kernel is a Linux kernel development',
+    major: 'C',
+    stars: 100,
+    lastUpdate: '2020-01-01',
+  },
+  {
+    name: 'Facebook',
+    description: 'Facebook is a Facebook development',
+    major: 'Java',
+    stars: 300,
+    lastUpdate: '2020-01-02',
+  },
+]
+```
+
+- /admin/getuserpro  GET
+- 获取一个user的可以管理的列表信息
+
+```ts
+type request = { userid: string };      //按照要求这里传回的是email
+type response = {
+  name: string;
+  description: string;
+  major: string;
+  stars: number;
+  lastUpdate: string;
+}[];
+// 返回结构: 一个数组, 每一项包含了 { name: 项目名, description: 描述, major: 最主要的语言, stars: 赞数, lastUpdate: 最后更新时间 }
+const sample: response = [
+  {
+    name: 'Linux Kernel',
+    description: 'Linux Kernel is a Linux kernel development',
+    major: 'C',
+    stars: 100,
+    lastUpdate: '2020-01-01',
+  },
+  {
+    name: 'Facebook',
+    description: 'Facebook is a Facebook development',
+    major: 'Java',
+    stars: 300,
+    lastUpdate: '2020-01-02',
+  },
+];
+```
+
+- admin/add GET
+- 增加一个项目至用户的权限中
+
+```ts
+type request = { projectname: string };      
+type response = {
+  name: string;
+  description: string;
+  major: string;
+  stars: number;
+  lastUpdate: string;
+}[];
+// 返回结构: 一个数组, 为了方便前端渲染，这里传回用户的所有可管理组件，每一项包含了 { name: 项目名, description: 描述, major: 最主要的语言, stars: 赞数, lastUpdate: 最后更新时间 } 
+const sample: response = [
+  {
+    name: 'Linux Kernel',
+    description: 'Linux Kernel is a Linux kernel development',
+    major: 'C',
+    stars: 100,
+    lastUpdate: '2020-01-01',
+  },
+  {
+    name: 'Facebook',
+    description: 'Facebook is a Facebook development',
+    major: 'Java',
+    stars: 300,
+    lastUpdate: '2020-01-02',
+  },
+];
+```
+
+- admin/remove GET
+- 从用户权限中移除一个项目
+
+```ts
+type request = { projectname: string };      
+type response = {
+  name: string;
+  description: string;
+  major: string;
+  stars: number;
+  lastUpdate: string;
+}[];
+// 返回结构: 一个数组, 为了方便前端渲染，这里传回用户的所有可管理组件，每一项包含了 { name: 项目名, description: 描述, major: 最主要的语言, stars: 赞数, lastUpdate: 最后更新时间 } 
+const sample: response = [
+  {
+    name: 'Linux Kernel',
+    description: 'Linux Kernel is a Linux kernel development',
+    major: 'C',
+    stars: 100,
+    lastUpdate: '2020-01-01',
+  },
+  {
+    name: 'Facebook',
+    description: 'Facebook is a Facebook development',
+    major: 'Java',
+    stars: 300,
+    lastUpdate: '2020-01-02',
+  },
+];
+```
+

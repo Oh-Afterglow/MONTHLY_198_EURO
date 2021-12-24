@@ -1,9 +1,10 @@
 import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyThroughRepositoryFactory} from '@loopback/repository';
+import {DefaultCrudRepository, repository, HasManyThroughRepositoryFactory, HasManyRepositoryFactory} from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import {Issue, IssueRelations, GithubUser, CommentsIssue} from '../models';
+import {Issue, IssueRelations, GithubUser, CommentsIssue, Label} from '../models';
 import {CommentsIssueRepository} from './comments-issue.repository';
 import {GithubUserRepository} from './github-user.repository';
+import {LabelRepository} from './label.repository';
 
 export class IssueRepository extends DefaultCrudRepository<
   Issue,
@@ -16,8 +17,10 @@ export class IssueRepository extends DefaultCrudRepository<
           typeof Issue.prototype.id
         >;
 
+  public readonly labels: HasManyRepositoryFactory<Label, typeof Issue.prototype.id>;
+
   constructor(
-    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CommentsIssueRepository') protected commentsIssueRepositoryGetter: Getter<CommentsIssueRepository>, @repository.getter('GithubUserRepository') protected githubUserRepositoryGetter: Getter<GithubUserRepository>,
+    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CommentsIssueRepository') protected commentsIssueRepositoryGetter: Getter<CommentsIssueRepository>, @repository.getter('GithubUserRepository') protected githubUserRepositoryGetter: Getter<GithubUserRepository>, @repository.getter('LabelRepository') protected labelRepositoryGetter: Getter<LabelRepository>,
   ) {
     super(Issue, dataSource);
     this.issue_commenter = this.createHasManyThroughRepositoryFactoryFor('issue_commenter', githubUserRepositoryGetter, commentsIssueRepositoryGetter,);

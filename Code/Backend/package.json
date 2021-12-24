@@ -57,6 +57,7 @@
     "@loopback/rest": "^11.0.0",
     "@loopback/rest-explorer": "^4.0.0",
     "@loopback/service-proxy": "^4.0.0",
+    "@octokit/core": "^3.5.1",
     "loopback-connector-postgresql": "^5.4.0",
     "loopback-connector-rest": "^3.7.0",
     "tslib": "^2.0.0"

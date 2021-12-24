@@ -69,9 +69,9 @@ export class Pull extends Entity {
   merged_at?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  merged_by_user?: number;
+  merged_by_user?: string; // the login name
 
   @property({
     type: 'boolean',
@@ -88,6 +88,12 @@ export class Pull extends Entity {
     type: 'number',
   })
   pr_sender_id?: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pr_sender_name: string;//the login name
 
   @property({
     type: 'array',
