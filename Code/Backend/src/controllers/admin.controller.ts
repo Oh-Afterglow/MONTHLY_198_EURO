@@ -11,8 +11,7 @@ import {
 import {UserRepository} from "@loopback/authentication-jwt";
 import {ProjRepoRepository, UserExtensionRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
-import {ALL_MEMBERS as ALL_USERS, MEMBER_PROJ as PROJECTS} from "./member.controller";//reusing response objects
-
+import {ALL_MEMBERS as ALL_USERS, MEMBER_PROJ as PROJECTS, project} from "./member.controller";//reusing response objects
 import {SecurityBindings, securityId, UserProfile} from "@loopback/security";
 import {inject} from "@loopback/core";
 import {Octokit} from "@octokit/core";
@@ -73,13 +72,7 @@ export class AdminController {
   async allProject(
     @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
-  ): Promise<{
-    name: string,
-    description: string,
-    major: string,
-    stars: number,
-    lastUpdate: string
-  }[]>{
+  ): Promise<project[]>{
     let currentUserID = currentUserProfile[securityId];
     let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
     let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});
@@ -117,26 +110,14 @@ export class AdminController {
      @param.query.string('userid') userEmail: string,
      @inject(SecurityBindings.USER)
         currentUserProfile: UserProfile,
-  ): Promise<{
-    name: string,
-    description: string,
-    major: string,
-    stars: number,
-    lastUpdate: string
-  }[]>{
+  ): Promise<project[]>{
     let currentUserID = currentUserProfile[securityId];
     let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
     let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});
     if(!currentUser?.is_admin){
       throw new HttpErrors.Forbidden();
     }
-    let result: {
-      name: string,
-      description: string,
-      major: string,
-      stars: number,
-      lastUpdate: string
-    }[] = [];
+    let result: project[] = [];
     let user = await this.userExtensionRepository.findById(userEmail, {fields: ["repo_view_list"]});
     if(user === null) throw new HttpErrors.NotFound('User not found');
     if(user.repo_view_list != null){
@@ -180,13 +161,7 @@ export class AdminController {
       body: {projectName: string, userid: string},
       @inject(SecurityBindings.USER)
         currentUserProfile: UserProfile,
-  ): Promise<{
-    name: string,
-    description: string,
-    major: string,
-    stars: number,
-    lastUpdate: string
-  }[]>{
+  ): Promise<project[]>{
     console.log('/admin/add');
     let currentUserID = currentUserProfile[securityId];
     let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
@@ -268,13 +243,7 @@ export class AdminController {
       body: {projectName: string, userid: string},
       @inject(SecurityBindings.USER)
         currentUserProfile: UserProfile,
-  ): Promise<{
-    name: string,
-    description: string,
-    major: string,
-    stars: number,
-    lastUpdate: string
-  }[]>{
+  ): Promise<project[]>{
     let currentUserID = currentUserProfile[securityId];
     let currentUserEmail = await this.userRepository.findById(currentUserID, {fields: ["email"]});
     let currentUser = await this.userExtensionRepository.findOne({where: {email: currentUserEmail.email}, fields: ['is_admin']});

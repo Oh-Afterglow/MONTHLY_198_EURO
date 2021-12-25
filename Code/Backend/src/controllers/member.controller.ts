@@ -91,6 +91,14 @@ const MEMBER_EVENTS: ResponseObject = {
   }
 }
 
+export type project = {
+  name: string,
+  description: string,
+  major: string,
+  stars: number,
+  lastUpdate: string,
+};
+
 export class MemberController {
   constructor(
     @repository(GithubUserRepository)
@@ -239,14 +247,8 @@ export class MemberController {
   @response(200, MEMBER_PROJ)
   async memberProject(
       @param.query.string('userid') memberName: string,
-  ): Promise<{
-    name: string,
-    description: string,
-    major: string,
-    stars: number,
-    lastUpdate: string
-  }[]>{
-    let result = [];
+  ): Promise<project[]>{
+    let result: project[] = [];
     let member = await this.githubUserRepository.findOne({where: {login_name: memberName}, fields: ["id"]});
     if(!memberName || typeof member === null){
       throw new HttpErrors.NotFound('Member not found. Is this name a login name of GitHub user?');
