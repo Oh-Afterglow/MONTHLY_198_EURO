@@ -16,12 +16,14 @@ import {
   get,
   getModelSchemaRef, HttpErrors,
   post,
-  requestBody,
+  requestBody, response,
   SchemaObject,
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
+import {MEMBER_PROJ as USER_PROJ, project} from "./member.controller";
+import {ProjRepoRepository} from "../repositories";
 
 
 @model()
@@ -77,6 +79,7 @@ export class UserController {
     public user: UserProfile,
     @repository(UserRepository) protected userRepository: UserRepository,
     @repository(UserExtensionRepository) protected userExtensionRepository: UserExtensionRepository,
+    @repository(ProjRepoRepository) protected projectRepoRepository: ProjRepoRepository
   ) {}
 
   @post('/login', {
@@ -177,5 +180,31 @@ export class UserController {
     await this.userRepository.userCredentials(savedUser.id).create({password});
 
     return savedUser;
+  }
+  
+  @authenticate('jwt')
+  @get('/user/allproject')
+  @response(200, USER_PROJ)
+  async userAllProject(
+      @inject(SecurityBindings.USER)
+          currentUserProfile: UserProfile,
+      ): Promise<project[]>{
+    let currentUserID = currentUserProfile[securityId];
+    let currentUser = await this.userRepository.findById(currentUserID, {fields: ["email"]});
+    let permitViewList = await this.userExtensionRepository.findOne({where: {email: currentUser.email}, fields: ['repo_view_list']});
+    if(!permitViewList?.repo_view_list) return [];
+    let result: project[] = [];
+    for (const projectName of permitViewList.repo_view_list) {
+      let project = await this.projectRepoRepository.findOne({where: {full_name: projectName}});
+      if(!project) continue;
+      result.push({
+        name: project.full_name,
+        description: project.description? project.description: ' ',
+        major: project.language? project.language: ' ',
+        stars: project.star_num,
+        lastUpdate: project.updated_at,
+      })
+    }
+    return result;
   }
 }
