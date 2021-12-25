@@ -36,7 +36,7 @@ type response = {
     value: number
 }[];
 
-export class CustomController {
+export class CustomizeController {
   constructor(
       @repository(UserExtensionRepository)
       protected userExtensionRepository: UserExtensionRepository,
