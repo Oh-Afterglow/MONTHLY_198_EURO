@@ -14,29 +14,29 @@ import {HttpErrors, post, requestBody, response, ResponseObject} from "@loopback
 import {Commit, Issue, Pull} from "../models";
 
 const CUSTOMIZED_DATA: ResponseObject = {
-    description: "Data of customized graph",
-    content: {
-        'application/json': {
-            schema: {
-                type: "array",
-                items: {
-                    type: "object",
-                    properties: {
-                        name: {type: "string"},
-                        value: {type: "number"},
-                    }
-                }
-            }
+  description: "Data of customized graph",
+  content: {
+    'application/json': {
+      schema: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            name: {type: "string"},
+            value: {type: "number"},
+          }
         }
+      }
     }
+  }
 }
 
-type response = {
-    name: string,
-    value: number
+type customizedData = {
+  name: string,
+  value: number
 }[];
 
-export class CustomizeController {
+export class CustomizeGraphController {
   constructor(
       @repository(UserExtensionRepository)
       protected userExtensionRepository: UserExtensionRepository,
@@ -56,27 +56,28 @@ export class CustomizeController {
       protected userRepository: UserRepository,
   ) {}
 
-    @post('/custom/customize')
-    @response(200, CUSTOMIZED_DATA)
-    async customizeData(
-        @requestBody({
-            content: {
-                'application/json':{
-                    schema: {
-                        type: "object",
-                        properties: {
-                            project: {type: "string"},
-                            chartType: {type: "string"},
-                            paramValue: {type: "string"},
-                        }
-                    }
-                }
+  @post('/custom/customize')
+  @response(200, CUSTOMIZED_DATA)
+  async customizeData(
+      @requestBody({
+        content: {
+          'application/json':{
+            schema: {
+              type: "object",
+              properties: {
+                project: {type: "string"},
+                chartType: {type: "string"},
+                paramValue: {type: "string"},
+              }
             }
-        } ) body: {chartType: string, paramValue: string, project: string }
-    ): Promise<response>{
+          }
+        }
+      } ) body: {project: string, chartType: string, paramValue: string }
+  ): Promise<customizedData>{
+    console.log("what");
     let project = await this.repoRepository.findOne({where: {full_name: body.project}, fields: ["id"]});
     if(!project) throw HttpErrors.NotFound;
-    let result: response;
+    let result: customizedData;
     let set, label, person;
     switch (body.chartType) {
       case 'Commit_number_by_organization':
@@ -210,100 +211,100 @@ export class CustomizeController {
         throw HttpErrors.BadRequest;
     }
 
-      return result;
-    }
+    return result;
+  }
 
-    async countByOrg(set: (Issue | Commit | Pull)[], ownerOrgName: string) : Promise<response>{
-      let authorID: number;
-      let result: response = [{
-        name: 'individual',
-        value: 0,
-      },{
-        name: ownerOrgName,
-        value: 0,
-      }]
-      for (const contrib of set) {
-          if(contrib instanceof Issue){
-            if(!contrib.user_id) {
-              result[1].value ++;
-              continue;
-            }
-            authorID = contrib.user_id;
-          } else if(contrib instanceof Commit){
-            if(!contrib.author_id) {
-              result[1].value++;
-              continue;
-            }
-            authorID = contrib.author_id;
-          } else {
-            if(!contrib.pr_sender_id){
-              result[1].value++;
-              continue;
-            }
-            authorID = contrib.pr_sender_id;
-          }
-        let person;
-        try{
-          person = await this.githubUserRepository.findById(authorID, {fields: ["org_name"]});
-        } catch (Error) {
-            continue;
+  async countByOrg(set: (Issue | Commit | Pull)[], ownerOrgName: string) : Promise<customizedData>{
+    let authorID: number;
+    let result: customizedData = [{
+      name: 'individual',
+      value: 0,
+    },{
+      name: ownerOrgName,
+      value: 0,
+    }]
+    for (const contrib of set) {
+      if(contrib instanceof Issue){
+        if(!contrib.user_id) {
+          result[1].value ++;
+          continue;
         }
-        if(!person.org_name){
-          result[0].value++;
-        } else if(person.org_name.includes(ownerOrgName)){
+        authorID = contrib.user_id;
+      } else if(contrib instanceof Commit){
+        if(!contrib.author_id) {
           result[1].value++;
-        } else {
-          let org: string = person.org_name[0];
-          let found: boolean = false;
-          for (const orgCount of result) {
-            if(orgCount.name == org) {
-              orgCount.value++;
-              found = true;
-              break;
-            }
-          }
-          if(!found){
-            result.push({name:org, value: 1});
+          continue;
+        }
+        authorID = contrib.author_id;
+      } else {
+        if(!contrib.pr_sender_id){
+          result[1].value++;
+          continue;
+        }
+        authorID = contrib.pr_sender_id;
+      }
+      let person;
+      try{
+        person = await this.githubUserRepository.findById(authorID, {fields: ["org_name"]});
+      } catch (Error) {
+        continue;
+      }
+      if(!person.org_name){
+        result[0].value++;
+      } else if(person.org_name.includes(ownerOrgName)){
+        result[1].value++;
+      } else {
+        let org: string = person.org_name[0];
+        let found: boolean = false;
+        for (const orgCount of result) {
+          if(orgCount.name == org) {
+            orgCount.value++;
+            found = true;
+            break;
           }
         }
+        if(!found){
+          result.push({name:org, value: 1});
+        }
       }
-      let result2: response = [{
-        name: 'others',
-        value: 0
-      }]
-      for (const resultElement of result) {
-        if(resultElement.value < set.length * 0.05){
-          result2[0].value += resultElement.value;
-        } else result2.push(resultElement);
-      }
-      return result;
     }
+    let result2: customizedData = [{
+      name: 'others',
+      value: 0
+    }]
+    for (const resultElement of result) {
+      if(resultElement.value < set.length * 0.05){
+        result2[0].value += resultElement.value;
+      } else result2.push(resultElement);
+    }
+    return result;
+  }
 
-    async countByTime(set: (Commit | Issue | Pull)[], option: string, isWeek: boolean): Promise<response> {
-      let result: response = isWeek? [{"name": "Sun", "value": 0,}, {"name": "Mon", "value": 0}, {"name": "Tue", "value": 0,}, {"name": "Wed", "value": 0,}, {"name": "Thu", "value": 0,}, {"name": "Fri", "value": 0}, {"name": "Sat", "value": 0,}]
+  async countByTime(set: (Commit | Issue | Pull)[], option: string, isWeek: boolean): Promise<customizedData> {
+    let result: customizedData = isWeek? [{"name": "Sun", "value": 0,}, {"name": "Mon", "value": 0}, {"name": "Tue", "value": 0,}, {"name": "Wed", "value": 0,}, {"name": "Thu", "value": 0,}, {"name": "Fri", "value": 0}, {"name": "Sat", "value": 0,}]
         : [{"name": "Jan", "value": 0,}, {"name": "Feb", "value": 0,}, {"name": "Mar", "value": 0,}, {"name": "Apr", "value": 0,}, {"name": "May", "value": 0,}, {"name": "June", "value": 0,}, {"name": "Jul", "value": 0,}, {"name": "Aug", "value": 0,}, {"name": "Sept", "value": 0,}, {"name": "Oct", "value": 0,}, {"name": "Nov", "value": 0,},{"name": "Dec", "value": 0,}];
-      for (const contrib of set) {
-        let time: string;
-        if(contrib instanceof Commit){
-          time = contrib.updated_at;
-        } else {
-          switch (option){
-            case "created":
-              time = contrib.created_at;
-              break;
-            case "closed":
-              if(!contrib.closed_at) continue;
-              time = contrib.closed_at;
-              break;
-            case "updated": default:
-              time = contrib.updated_at;
-          }
+    for (const contrib of set) {
+      let time: string;
+      if(contrib instanceof Commit){
+        time = contrib.updated_at;
+      } else {
+        switch (option){
+          case "created":
+            time = contrib.created_at;
+            break;
+          case "closed":
+            if(!contrib.closed_at) continue;
+            time = contrib.closed_at;
+            break;
+          case "updated": default:
+            time = contrib.updated_at;
         }
-        console.log(time);
-        if(isWeek) result[new Date(time).getDay()].value++;
-        else result[new Date(time).getMonth()].value++;
       }
-      return result;
+      console.log(time);
+      if(isWeek) result[new Date(time).getDay()].value++;
+      else result[new Date(time).getMonth()].value++;
     }
+    return result;
+  }
 }
 
