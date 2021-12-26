@@ -126,7 +126,7 @@ export default function Layout({ children }) {
               sx={{ flexGrow: 1 }}
               onClick={() => nav('/main')}
             >
-              (Here should be filled with a name)
+              MONTHLY 198 EURO
             </Typography>
             <IconButton color='inherit' onClick={() => nav('/')}>
               <LoginRounded />
