@@ -18,7 +18,7 @@ import CustomBar from '../components/CustomBar';
 import CustomLine from '../components/CustomLine';
 import CustomPie from '../components/CustomPie';
 import request from '../utils/request';
-
+import {useParams} from 'react-router-dom'
 
 const CustomCard = () => {
   const [chartType, setChartType] = useState(0); // 0: pie chart, 1: bar chart, 2: line chart
@@ -85,7 +85,7 @@ const CustomCard = () => {
 
   const getdata = async () => {                                       //获取所有用户数据
       try {
-          const data = await request.get('/custom/customize', {
+          const data = await request.post('/custom/customize', {
             "chartType": listName[dataType],
             "paramValue": dataType>=17?paramName:null,
             "project":projectName,
