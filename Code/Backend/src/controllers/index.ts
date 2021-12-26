@@ -10,4 +10,4 @@ export * from './issue-label.controller';
 export * from './update.controller';
 export * from './admin.controller';
 export * from './user-avatar.controller';
-export * from './customizeController';
+export * from './customize-graph.controller';
