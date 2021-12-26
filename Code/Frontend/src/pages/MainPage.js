@@ -15,7 +15,7 @@ const MainPage = () => <MainPageSub />;
 
 const MainPageSub = () => {
   const { set, setAll } = useProject();
-
+  const nav = useNavigate();
   // TODO: Replace with some default data
 
   const [projects, setProjects] = useState([
@@ -37,7 +37,7 @@ const MainPageSub = () => {
         const data = await request.get('/user/allproject', {});
         if (data instanceof Array) {
           setProjects(data);
-          setAll(data);
+          setAll(data.map(({ name }) => name));
           console.log(data);
         } else {
           throw new Error('Invalid data');
@@ -61,7 +61,6 @@ const MainPageSub = () => {
   };
 
   const projectCards = projects.map((project, id) => {
-    const nav = useNavigate();
     const handleClick = (name) => {
       console.log(name);
       nav(`/project/${encodeURIComponent(name)}`);
