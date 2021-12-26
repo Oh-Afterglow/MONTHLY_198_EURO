@@ -68,7 +68,7 @@ const CustomCard = () => {
     try {
       const data = await request.post('/custom/customize', {
         chartType: listName[dataType],
-        paramValue: dataType >= 17 ? paramName : null,
+        paramValue: dataType >= 17 ? paramName : '1',
         project: projectName,
       });
       if (data instanceof Array) {
