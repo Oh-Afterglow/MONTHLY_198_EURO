@@ -296,7 +296,7 @@ export class MemberController {
         let member = {
           name: contributor.login_name,
           avatar: contributor.avatar_url,
-          description: contributor.bio === undefined? '' : contributor.bio,
+          description: contributor.bio? contributor.bio : ' ',
         };
         // if(member.description.length === 0) member.description = '我爱万志远';//placeholder
         if(!result.includes(member)){

@@ -17,7 +17,10 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from '../components/listItems';
+import { MainListItems, SecondaryListItems } from '../components/listItems';
+import CtxWrapper from '../utils/CtxWrapper';
+import { useNavigate } from 'react-router-dom';
+import { LoginRounded } from '@mui/icons-material';
 
 function Copyright(props) {
   return (
@@ -86,6 +89,8 @@ const Drawer = styled(MuiDrawer, {
 const mdTheme = createTheme();
 
 export default function Layout({ children }) {
+  const nav = useNavigate();
+
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -119,13 +124,12 @@ export default function Layout({ children }) {
               color='inherit'
               noWrap
               sx={{ flexGrow: 1 }}
+              onClick={() => nav('/main')}
             >
-              Dashboard
+              MONTHLY 198 EURO
             </Typography>
-            <IconButton color='inherit'>
-              <Badge badgeContent={4} color='secondary'>
-                <NotificationsIcon />
-              </Badge>
+            <IconButton color='inherit' onClick={() => nav('/')}>
+              <LoginRounded />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -143,9 +147,13 @@ export default function Layout({ children }) {
             </IconButton>
           </Toolbar>
           <Divider />
-          <List>{mainListItems}</List>
+          <List>
+            <MainListItems />
+          </List>
           <Divider />
-          <List>{secondaryListItems}</List>
+          <List>
+            <SecondaryListItems />
+          </List>
         </Drawer>
         <Box
           component='main'
@@ -161,7 +169,7 @@ export default function Layout({ children }) {
           }}
         >
           <Toolbar />
-          <Grid container spacing={3}>
+          <Grid container spacing={3} style={{ padding: '4rem 2rem 2rem' }}>
             {children}
           </Grid>
           <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>

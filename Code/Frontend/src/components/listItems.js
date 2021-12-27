@@ -9,62 +9,65 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { SignalCellularNullOutlined } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import CtxWrapper from '../utils/CtxWrapper';
+import useProject from '../utils/useProject';
 
-export const mainListItems = (
-  <div>
-    <ListItem button>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary="Dashboard" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <ShoppingCartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Orders" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Customers" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Reports" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <LayersIcon />
-      </ListItemIcon>
-      <ListItemText primary="Integrations" />
-    </ListItem>
-  </div>
-);
+export const MainListItems = () => <MainListItemsSub />;
+export const SecondaryListItems = () => <SecondaryListItemsSub />;
 
-export const secondaryListItems = (
-  <div>
-    <ListSubheader inset>Saved reports</ListSubheader>
-    <ListItem button>
+const MainListItemsSub = () => {
+  const { value } = useProject();
+  console.log(value);
+  const nav = useNavigate();
+
+  return (
+    <>
+      <ListItem button onClick={() => nav(`/project/${value}`)}>
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        <ListItemText primary='Project Overview' />
+      </ListItem>
+      <ListItem button onClick={() => nav(`/member/${value}`)}>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary='Member Overview' />
+      </ListItem>
+      <ListItem button onClick={() => nav(`/custom/${value}`)}>
+        <ListItemIcon>
+          <BarChartIcon />
+        </ListItemIcon>
+        <ListItemText primary='Custom Charts' />
+      </ListItem>
+      <ListItem button onClick={() => nav(`/admin`)}>
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary='Admin Panel' />
+      </ListItem>
+    </>
+  );
+};
+
+const SecondaryListItemsSub = () => {
+  const { all, set } = useProject();
+
+  const ListItemButtons = all.map((proj) => (
+    <ListItem button key={proj} onClick={() => set(proj)}>
       <ListItemIcon>
         <AssignmentIcon />
       </ListItemIcon>
-      <ListItemText primary="Current month" />
+      <ListItemText primary={proj} />
     </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Last quarter" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Year-end sale" />
-    </ListItem>
-  </div>
-);
+  ));
+
+  return (
+    <>
+      <ListSubheader inset>Current Projects</ListSubheader>
+      {ListItemButtons}
+    </>
+  );
+};

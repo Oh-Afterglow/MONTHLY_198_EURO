@@ -8,52 +8,26 @@ import MemberCard from '../components/MemberCard';
 import ProjectCard from '../components/ProjectCard';
 import { Card } from '@mui/material';
 import ActivityList from '../components/ActivityList';
+import {useParams} from 'react-router-dom'
+
 
 const Member = () => {
   // TODO: Replace with some default data
   const projectName = useParams().name;
   const [composeData, setComposeData] = React.useState([
-    { name: 'Facebook', value: 50 },
-    { name: 'Google', value: 20 },
-    { name: 'Baidu', value: 10 },
-    { name: 'ZJU', value: 10 },
+    { name: 'Unknown', value: 100 },
   ]);
 
   const [members, setMembers] = useState([
-    {
-      name: '张三',
-      avatar: 'https://avatars0.githubusercontent.com/u/8186664?s=460&v=4',
-      description: '这个人很懒，什么都没有留下',
-    },
-    {
-      name: '李四',
-      avatar: 'https://avatars0.githubusercontent.com/u/8186664?s=460&v=4',
-      description: '这个人很懒，什么都没有留下',
-    },
+   
   ]);
 
   const [projects, setProjects] = useState([
-    {
-      name: 'blockchainCourse',
-      description: '浙江大学 区块链与数字货币课程',
-      major: 'javascript',
-      star: '20',
-      lastupdate: 'Updated on 29 Jun 2020',
-    },
-    {
-      name: 'cCompiler',
-      description: '这个人很懒，什么都没有留下',
-      major: 'javascript',
-      star: '20',
-      lastupdate: 'Updated on 29 Jun 2020',
-    },
+    
   ]);
 
   const  [memberTableData, setmemberTableData] =  useState([
-    { id: 1, time: '2021/11/11', event: 'Development01 join the team' },
-    { id: 2, time: '2021/11/11', event: 'Development01 leave the team' },
-    { id: 3, time: '2021/11/30', event: 'Development03 join the team' },
-    { id: 4, time: '2021/11/11', event: 'Development04 join the team' },
+    
   ]);
 
   React.useEffect(() => {

@@ -10,15 +10,16 @@ import {
   ListItem,
   TextField,
   Button,
+  Card,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Layout from '../components/Layout';
-import {ResponsiveContainer } from 'recharts';
+import { ResponsiveContainer } from 'recharts';
 import CustomBar from '../components/CustomBar';
 import CustomLine from '../components/CustomLine';
 import CustomPie from '../components/CustomPie';
 import request from '../utils/request';
-
+import { useParams } from 'react-router-dom';
 
 const CustomCard = () => {
   const [chartType, setChartType] = useState(0); // 0: pie chart, 1: bar chart, 2: line chart
@@ -52,123 +53,119 @@ const CustomCard = () => {
     'Personal_contribution_number_by_year',
   ];
 
-  const [data,setData] = React.useState([
-    {
-      "name": "Page A",
-      "value": 4000,
-    },
-    {
-      "name": "Page B",
-      "value": 7000,
-    },
-    {
-      "name": "Page C",
-      "value": 4000,
-    },
-    {
-      "name": "Page D",
-      "value": 2000,
-    },
-    {
-      "name": "Page E",
-      "value": 4000,
-    },
-    {
-      "name": "Page F",
-      "value": 3000,
-    },
-    {
-      "name": "Page G",
-      "value": 4000,
-    }
-  ])
+  const [data, setData] = React.useState([
+    { name: 'Page A', value: 4000 },
+    { name: 'Page B', value: 7000 },
+    { name: 'Page C', value: 4000 },
+    { name: 'Page D', value: 2000 },
+    { name: 'Page E', value: 4000 },
+    { name: 'Page F', value: 3000 },
+    { name: 'Page G', value: 4000 },
+  ]);
 
-  const getdata = async () => {                                       //获取所有用户数据
-      try {
-          const data = await request.get('/custom/customize', {
-            "chartType": listName[dataType],
-            "paramValue": dataType>=17?paramName:null,
-            "project":projectName,
-          },);
-          if (data instanceof Array) {
-            setData(data);
-          } else {
-              throw new Error('Invalid data');
-          }
-      } catch (e) {
-      // TODO: handle error
-          console.error(e);
+  const getdata = async () => {
+    //获取所有用户数据
+    try {
+      const data = await request.post('/custom/customize', {
+        chartType: listName[dataType],
+        paramValue: dataType >= 17 ? paramName : '1',
+        project: projectName,
+      });
+      if (data instanceof Array) {
+        setData(data);
+      } else {
+        throw new Error('Invalid data');
       }
-  }
+    } catch (e) {
+      // TODO: handle error
+      console.error(e);
+    }
+  };
 
-  React.useEffect(() =>
-    {
-      getdata();
-    },
-    [dataType]);
+  React.useEffect(() => {
+    getdata();
+  }, [dataType]);
 
-
-  const listItems = listName.map((item, id) => (
-    id==dataType?
-    <ListItemButton key={item} onClick={() => setDataType(id)}  style={{backgroundColor:"#CCFFCC"}}>
-      {item}
-    </ListItemButton>
-    :<ListItemButton key={item} onClick={() => setDataType(id)}>
-      {item}
-    </ListItemButton>
-  ));
+  const listItems = listName.map((item, id) =>
+    id == dataType ? (
+      <ListItemButton
+        key={item}
+        onClick={() => setDataType(id)}
+        style={{ backgroundColor: '#CCFFCC' }}
+      >
+        {item}
+      </ListItemButton>
+    ) : (
+      <ListItemButton key={item} onClick={() => setDataType(id)}>
+        {item}
+      </ListItemButton>
+    )
+  );
 
   const handleSubmit = () => {
     console.log(chartType, dataType, paramName);
     getdata();
   };
 
+  const ref = useRef(null);
+
+  const size = {
+    width: Math.trunc((ref.current?.offsetWidth ?? 0) * 0.8),
+    height: Math.trunc((ref.current?.offsetHeight ?? 0) * 0.8),
+  };
+
+  const charts = [
+    <CustomPie data={data} {...size} />,
+    <CustomBar data={data} />,
+    <CustomLine data={data} />,
+  ];
+
   return (
     <Layout>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={8}>
-
-          {(chartType===0)&&<ResponsiveContainer width="40%" height="20%">
-            <CustomPie data={data}/>
-          </ResponsiveContainer>}
-
-          {(chartType===1)&&<ResponsiveContainer width="40%" height="20%">
-            <CustomBar data={data}/>
-          </ResponsiveContainer>}
-
-          {(chartType===2)&&<ResponsiveContainer width="40%" height="20%">
-            <CustomLine data={data}/>
-          </ResponsiveContainer>}
-
+          <Card style={{ width: '100%', height: '100%' }}>
+            <ResponsiveContainer ref={ref} width='100%' height='100%'>
+              {charts[chartType]}
+            </ResponsiveContainer>
+          </Card>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <FormControl component='fieldset'>
-            <FormLabel component='legend'>Chart Type</FormLabel>
-            <RadioGroup
-              row
-              aria-label='gender'
-              name='controlled-radio-buttons-group'
-              value={chartType}
-              onChange={handleChange}
-            >
-              <FormControlLabel value={0} control={<Radio />} label='Pie' />
-              <FormControlLabel value={1} control={<Radio />} label='Bar' />
-              <FormControlLabel value={2} control={<Radio />} label='Line' />
-            </RadioGroup>
-          </FormControl>
-          <List>
-            {listItems}
-            {listName.length - dataType < 5 ? (
+          <Card style={{ padding: '1em', marginBottom: '1em' }}>
+            <FormControl component='fieldset'>
+              <FormLabel component='legend'>Chart Type</FormLabel>
+              <RadioGroup
+                row
+                aria-label='gender'
+                name='controlled-radio-buttons-group'
+                value={chartType}
+                onChange={handleChange}
+              >
+                <FormControlLabel value={0} control={<Radio />} label='Pie' />
+                <FormControlLabel value={1} control={<Radio />} label='Bar' />
+                <FormControlLabel value={2} control={<Radio />} label='Line' />
+              </RadioGroup>
+            </FormControl>
+          </Card>
+          <Card>
+            <List>
+              {listItems}
               <ListItem>
                 <TextField
                   label='Name'
+                  disabled={listName.length - dataType >= 5}
                   value={paramName}
                   onChange={(e) => setParamName(e.target.value)}
                 />
               </ListItem>
-            ) : null}
-          </List>
-          <Button color='primary' variant='contained' onClick={handleSubmit}>
+            </List>
+          </Card>
+          <Button
+            color='primary'
+            variant='contained'
+            onClick={handleSubmit}
+            style={{ marginTop: '1em', marginLeft: '5%', width: '90%' }}
+          >
             生成图表
           </Button>
         </Grid>
