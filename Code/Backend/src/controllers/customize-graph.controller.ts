@@ -87,7 +87,7 @@ export class CustomizeGraphController {
       case 'Commit_number_by_week':
         // @ts-ignore
         set = await this.commitRepository.find({where: {and: [{repos_id: project.id}, {updated_at: {gte: Date.now() - 7 * 24 * 60 * 60 * 1000}}]}, fields: ["author_id", "author_name", "updated_at"]});
-        console.log(set.length);
+        // console.log(set.length);
         result = await this.countByTime(set, '', true);
         break;
       case 'Commit_number_by_year':
@@ -300,7 +300,7 @@ export class CustomizeGraphController {
             time = contrib.updated_at;
         }
       }
-      console.log(time);
+      // console.log(time);
       if(isWeek) result[new Date(time).getDay()].value++;
       else result[new Date(time).getMonth()].value++;
     }
