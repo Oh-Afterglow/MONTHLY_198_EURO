@@ -20,6 +20,8 @@ import CustomLine from '../components/CustomLine';
 import CustomPie from '../components/CustomPie';
 import request from '../utils/request';
 import { useParams } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
+
 
 const CustomCard = () => {
   const [chartType, setChartType] = useState(0); // 0: pie chart, 1: bar chart, 2: line chart
@@ -51,6 +53,30 @@ const CustomCard = () => {
     'Tagged_issue_number_by_year',
     'Personal_contribution_number_by_week',
     'Personal_contribution_number_by_year',
+  ];
+
+  const showlistName = [
+    'Organization Commit Number',
+    'Project Daily Commit Number',
+    'Project Monthly Commit Number',
+    'Organization Issue Number',
+    'Project Daily Issue Number',
+    'Project Monthly Issue Number',
+    'Organization Pull Request Number',
+    'Project Daily Pull Request Number',
+    'Project Monthly Pull Request Number',
+    'Project Daily Open Issue Number',
+    'Project Monthly Open Issue Number',
+    'Project Daily Close Issue Number',
+    'Project Monthly Close Issue Number',
+    'Project Daily Open Pull Request Number',
+    'Project Monthly Open Pull Request Number',
+    'Project Daily Close Pull Request Number',
+    'Project Monthly Close Pull Request Number',
+    'Project Daily Issue Number with Tag',
+    'Project Monthly Issue Number with Tag',
+    'Project Daily Contribution Number with Name',
+    'Project Monthly Contribution Number with Name',
   ];
 
   const [data, setData] = React.useState([
@@ -86,7 +112,7 @@ const CustomCard = () => {
     getdata();
   }, [dataType]);
 
-  const listItems = listName.map((item, id) =>
+  const listItems = showlistName.map((item, id) =>
     id == dataType ? (
       <ListItemButton
         key={item}

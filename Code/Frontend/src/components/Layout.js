@@ -31,7 +31,7 @@ function Copyright(props) {
       {...props}
     >
       {'Copyright © '}
-      <Link color='inherit' href='https://mui.com/'>
+      <Link color='inherit' href='https://localhost:3000/'>
         Your Website
       </Link>{' '}
       {new Date().getFullYear()}
@@ -100,7 +100,7 @@ export default function Layout({ children }) {
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position='absolute' open={open}>
+        <AppBar position='absolute' open={open} style={{ background: '#2E3B55'}}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -108,13 +108,14 @@ export default function Layout({ children }) {
           >
             <IconButton
               edge='start'
-              color='inherit'
+              color='default'
               aria-label='open drawer'
               onClick={toggleDrawer}
               sx={{
                 marginRight: '36px',
                 ...(open && { display: 'none' }),
               }}
+              
             >
               <MenuIcon />
             </IconButton>
@@ -126,7 +127,7 @@ export default function Layout({ children }) {
               sx={{ flexGrow: 1 }}
               onClick={() => nav('/main')}
             >
-              MONTHLY 198 EURO
+              DECEMBER
             </Typography>
             <IconButton color='inherit' onClick={() => nav('/')}>
               <LoginRounded />

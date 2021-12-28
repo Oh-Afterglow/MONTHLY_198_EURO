@@ -10,6 +10,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import useProject from '../utils/useProject';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 const MainPage = () => <MainPageSub />;
 
@@ -79,6 +81,10 @@ const MainPageSub = () => {
   return (
     <Layout>
       <Grid item container direction='column' xs={12} sm={4}>
+      <Alert severity="info">
+        <AlertTitle><strong>Welcome</strong></AlertTitle>
+        <strong>Hello!</strong> Choose a project to start
+      </Alert>
         {projectCards}
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}></Grid>

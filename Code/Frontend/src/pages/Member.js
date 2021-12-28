@@ -9,7 +9,8 @@ import ProjectCard from '../components/ProjectCard';
 import { Card } from '@mui/material';
 import ActivityList from '../components/ActivityList';
 import {useParams} from 'react-router-dom'
-
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 const Member = () => {
   // TODO: Replace with some default data
@@ -90,9 +91,10 @@ const Member = () => {
   };
 
 
-  async function searchmember(id){                                         //获取某个用户的所有管理pro
+  async function searchmember(id,flag){                                         //获取某个用户的所有管理pro
     //这里向后端发请求获取
-    if(id!=-1){
+    if(flag!=1){
+      console.log("jaja")
         let userid = members[id].name
         console.log(userid)
         try {
@@ -108,6 +110,9 @@ const Member = () => {
             // TODO: handle error
             console.error(e);
           }
+    }
+    else{
+      setProjects([]);
     }
   }
   
@@ -169,21 +174,23 @@ const Member = () => {
         data={{ ...member, activities }}
         showActivities={true}
         cardStyle={selectedMember!== id ?UsercardStyle:UsercardStyleoutline}
-        onClick={() =>   {setSelectedMember(selectedMember === id ? -1 : id),searchmember(id)}}
+        onClick={() =>   {setSelectedMember(selectedMember === id ? -1 : id),searchmember(id,selectedMember === id)}}
       />
       {selectedMember === id && <ActivityList data={activities} />}
     </>
   ));
 
   const projectCards = projects.map((project) => (
-    <ProjectCard key={project.name} data={project} cardStyle={ProjectcardStyle}/>
+    <a href={'https://github.com/'+project.name}   target="_blank" style={{ textDecoration: 'none' }}>
+      <ProjectCard key={project.name} data={project} cardStyle={ProjectcardStyle}/>
+    </a>
   ));
 
   return (
     <Layout>
       <Grid item container direction='column' xs={12} sm={4}>
         <PieChart
-          title={'Member from'}
+          title={'Member From'}
           data={composeData}
           style={pieChartStyle}
         />
@@ -195,7 +202,7 @@ const Member = () => {
         {memberCards}
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
-        {projectCards}
+        {projects.length==0?<Alert severity="success" ><AlertTitle><h1>Info</h1></AlertTitle><h2>Hello, please choose a project — <strong>from left list</strong></h2></Alert>:projectCards}
       </Grid>
     </Layout>
   );
