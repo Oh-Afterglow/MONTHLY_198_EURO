@@ -24,7 +24,7 @@ const MainListItemsSub = () => {
 
   return (
     <>
-      <ListItem button onClick={() => nav(`/project/${value}`)}>
+      <ListItem button onClick={() => nav(`/project/${value}`)} >
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>

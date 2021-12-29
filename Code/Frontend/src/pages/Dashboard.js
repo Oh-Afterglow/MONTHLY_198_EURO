@@ -27,6 +27,10 @@ const Dashboard = () => {
     { name: 'Image', value: 200 },
   ]);
 
+  const commitname = ["Daliy Updated Commit in the Past Week","Daily Updated Commit in the Past Month","Monthly Updated Commit in the Past Half Year"]
+  const issuename = ["Daliy Updated Issue in the Past Week","Daily Updated Commit in the Past Month","Monthly Updated Commit in the Past Half Year"]
+  const prname = ["Daliy Updated Pull Request in the Past Week","Daily Updated Pull Request in the Past Month","Monthly Updated Pull Request in the Past Half Year"]
+
   const [projectnumber, setProjectnumber] = React.useState([
     { commit: '10', issue: '23', pullRequest: '244' }
   ]);
@@ -511,7 +515,7 @@ const Dashboard = () => {
       <Grid item container direction='column' xs={12} sm={4}>
         <NumberCard data={projectnumber} />
         <PieChart
-          title={'Project Composition'}
+          title={'Project Language Composition'}
           data={composeData}
           style={pieChartStyle}
         />
@@ -531,7 +535,7 @@ const Dashboard = () => {
         <ChartSwitcher
           chart0={
             <BarChart
-              title={'Commits'}
+              title={commitname[choosemode]}
               mode={choosemode}
               xname={'Time'}
               yname={'Commit'}
@@ -552,7 +556,7 @@ const Dashboard = () => {
       <ChartSwitcher
           chart0={
             <BarChart
-              title={'Issue'}
+              title={issuename[choosemode]}
               mode={choosemode}
               xname={'Time'}
               yname={'Issue'}
@@ -563,7 +567,7 @@ const Dashboard = () => {
           }
           chart1={
             <SolvedurationChart
-              title={'Duration'}
+              title={'Issue Sloved Duration'}
               xname={'Time'}
               yname={'Mount'}
               value={IssueSolveData}
@@ -574,7 +578,7 @@ const Dashboard = () => {
         <ChartSwitcher
           chart0={
             <BarChart
-              title={'Pr'}
+              title={prname[choosemode]}
               mode={choosemode}
               xname={'Time'}
               yname={'Pr'}
@@ -585,7 +589,7 @@ const Dashboard = () => {
           }
           chart1={
             <SolvedurationChart
-              title={'Duration'}
+              title={'Pull Request Sloved Duration'}
               xname={'Time'}
               yname={'Mount'}
               value={PrSolveData}
