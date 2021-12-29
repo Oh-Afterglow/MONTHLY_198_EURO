@@ -20,7 +20,6 @@ import CustomLine from '../components/CustomLine';
 import CustomPie from '../components/CustomPie';
 import request from '../utils/request';
 import { useParams } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
 
 
 const CustomCard = () => {

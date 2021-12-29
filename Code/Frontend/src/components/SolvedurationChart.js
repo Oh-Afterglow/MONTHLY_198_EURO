@@ -30,6 +30,9 @@ export default function BarChart({ title, xname, value, yname, style }) {
             fill: '#fff',
           },
         },
+        gradient: {
+          color: ['#D2691E', '#8B4513']
+        }
       },   
     ],
   };

@@ -2,6 +2,7 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import { Charts } from '@jiaminghi/data-view-react';
+import CustomPie from '../components/CustomPie';
 
 export default function PieChart({ title, data, style }) {
   const option = {

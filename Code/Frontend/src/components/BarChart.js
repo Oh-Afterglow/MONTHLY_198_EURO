@@ -3,10 +3,10 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { Charts } from '@jiaminghi/data-view-react';
 
-export default function BarChart({ title, mode, xname, xvalue,xdifference, yname, style }) {
+export default function BarChart({  mode, xname, xvalue,xdifference, yname, style,color}) {
   let option1 = {
     title: {
-      text: title,
+      text: " ",
     },
     xAxis: {
       name: xname,
@@ -30,11 +30,13 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
             fill: '#fff',
           },
         },
+       color: color
       },
       {
         data: xdifference[0].value,
         type: 'bar',
         stack: 'a',
+        color:'#778899'
       },
       
     ],
@@ -42,7 +44,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
 
   let option2 = {
     title: {
-      text: title,
+      text: " ",
     },
     xAxis: {
       name: xname,
@@ -65,6 +67,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
           style: {
             fill: '#fff',
           },
+
         },
       },
       {
@@ -79,6 +82,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
             fill: '#fff',
           },
         },
+
       },
       {
         data: xvalue[2].value,
@@ -92,6 +96,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
             fill: '#fff',
           },
         },
+
       },
       {
         data: xvalue[3].value,
@@ -105,6 +110,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
             fill: '#fff',
           },
         },
+ 
       },
       {
         data: xvalue[4].value,
@@ -117,7 +123,9 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
           style: {
             fill: '#fff',
           },
+         
         },
+
       },
       {
         data: xvalue[5].value,
@@ -131,6 +139,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
             fill: '#fff',
           },
         },
+
       },
       {
         data: xvalue[6].value,
@@ -144,6 +153,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
             fill: '#fff',
           },
         },
+
       },
 
       {
@@ -186,7 +196,7 @@ export default function BarChart({ title, mode, xname, xvalue,xdifference, yname
 
   const option3 = {
     title: {
-      text: title,
+      text: " ",
     },
     xAxis: {
       name: xname,

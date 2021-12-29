@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import Layout from '../components/Layout';
 import NumberCard from '../components/NumberCard';
-import PieChart from '../components/PieChart';
 import BarChart from '../components/BarChart';
 import request from '../utils/request';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import ProjectTable from '../components/ProjectTable';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Card } from '@mui/material';
 import ChartSwitcher from '../components/ChartSwitcher';
 import SolvedurationChart from '../components/SolvedurationChart';
 import TagRankChart from '../components/TagRankChart';
 import {useParams} from 'react-router-dom'
+import { PieChart,ResponsiveContainer ,Pie,Tooltip,Sector} from 'recharts';
+import CommitTable from '../components/CommitTable';
+import Typography from "@mui/material/Typography";
+import Box from '@mui/material/Box';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
+import SaveIcon from '@mui/icons-material/Save';
+import PrintIcon from '@mui/icons-material/Print';
+import ShareIcon from '@mui/icons-material/Share';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+
 
 const Dashboard = () => {
   // TODO: Replace with some default data
@@ -27,9 +39,9 @@ const Dashboard = () => {
     { name: 'Image', value: 200 },
   ]);
 
-  const commitname = ["Daliy Updated Commit in the Past Week","Daily Updated Commit in the Past Month","Monthly Updated Commit in the Past Half Year"]
-  const issuename = ["Daliy Updated Issue in the Past Week","Daily Updated Commit in the Past Month","Monthly Updated Commit in the Past Half Year"]
-  const prname = ["Daliy Updated Pull Request in the Past Week","Daily Updated Pull Request in the Past Month","Monthly Updated Pull Request in the Past Half Year"]
+  const commitname = ["Daliy Commit in the Past Week","Daily Commit in the Past Month","Monthly Commit in the Half Year"]
+  const issuename = ["Daliy Issue in the Past Week","Daily Issue in the Past Month","Monthly Issue in the Half Year"]
+  const prname = ["Daliy Pull Request in the Past Week","Daily Pull Request in the Past Month","Monthly Pull Request in the Half Year"]
 
   const [projectnumber, setProjectnumber] = React.useState([
     { commit: '10', issue: '23', pullRequest: '244' }
@@ -177,6 +189,7 @@ const Dashboard = () => {
       ],
     },
   ]);
+
 
 
   const [issuedifference, setissuedifference] = React.useState([
@@ -496,113 +509,223 @@ const Dashboard = () => {
   };
 
   const barChartStyle = {
-    height: '70vh',
+    height: '50vh',
   };
 
   let handlechange = (event) => {
     setchoosemode((choosemode) => event.target.value);
   };
 
-  const projectTableData = [
-    { id: 1, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
-    { id: 2, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
-    { id: 3, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
-    { id: 4, type: 'Bug', time: '10:00', author: 'John', status: 'Open' },
+  const renderActiveShape = (props) => {
+    const RADIAN = Math.PI / 180;
+    const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+    const sin = Math.sin(-RADIAN * midAngle);
+    const cos = Math.cos(-RADIAN * midAngle);
+    const sx = cx + (outerRadius + 10) * cos;
+    const sy = cy + (outerRadius + 10) * sin;
+    const mx = cx + (outerRadius + 30) * cos;
+    const my = cy + (outerRadius + 30) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+    const ey = my;
+    const textAnchor = cos >= 0 ? 'start' : 'end';
+  
+    return (
+      <g>
+        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+          {payload.name}
+        </text>
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+        />
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={outerRadius + 6}
+          outerRadius={outerRadius + 10}
+          fill={fill}
+        />
+        <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
+        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+        <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`PV ${value}`}</text>
+        <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
+          {`(Rate ${(percent * 100).toFixed(2)}%)`}
+        </text>
+      </g>
+    );
+  };
+
+  const cardStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    margin: '1rem 0 1rem'
+  };
+
+  const cardStyle1 = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    margin: '1rem 0 1rem 1rem'
+  };
+
+  const ref = useRef(null);
+
+  const commitdata = [
+    { name: 'Bug', commit: '10:00'},
+    {  name: 'Bug', commit: '10:00'},
+    { name: 'Bug', commit: '10:00'},
+    { name: 'Bug', commit: '10:00'},
   ];
 
+  const [index, setIndex] = React.useState(1);
+
+  const actions = [
+    { icon: <FileCopyIcon />, name: 'Copy' },
+    { icon: <SaveIcon />, name: 'Save' },
+    { icon: <PrintIcon />, name: 'Print' },
+    { icon: <ShareIcon />, name: 'Share' },
+  ];
+
+  
   return (
     <Layout>
       <Grid item container direction='column' xs={12} sm={4}>
         <NumberCard data={projectnumber} />
-        <PieChart
-          title={'Project Language Composition'}
-          data={composeData}
-          style={pieChartStyle}
-        />
-
-        <RadioGroup
-          row
-          aria-label='time'
-          name='row-radio-buttons-group'
-          value={choosemode}
-          onChange={handlechange}
+        <Card style={{height: '41.3vh',margin: '1rem 0 1rem'}}>
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+          style={{ display: 'flex',flexDirection: 'column',justifyContent: 'center',alignItems: 'center',margin: '1rem'}}
         >
-          <FormControlLabel value='0' control={<Radio />} label='week' />
-          <FormControlLabel value='1' control={<Radio />} label='month' />
-          <FormControlLabel value='2' control={<Radio />} label='halfyear' />
-        </RadioGroup>
-
+          Language Compose
+        </Typography>
+          <PieChart width={400} height={250}>
+            <Pie
+              activeIndex={index}
+              activeShape={renderActiveShape}
+              data={composeData}
+              cx="50%"
+              cy="50%"
+              innerRadius={40}
+              outerRadius={60}
+              fill="#8884d8"
+              dataKey="value"
+              onMouseEnter={ (_, index) =>setIndex(index)}
+            />
+            <Tooltip />
+          </PieChart>
+        </Card>
+        
         <ChartSwitcher
           chart0={
             <BarChart
-              title={commitname[choosemode]}
               mode={choosemode}
-              xname={'Time'}
-              yname={'Commit'}
+              xname={'T'}
+              yname={'Mount'}
               xvalue={commit[choosemode].value}
               xdifference={commitdifference[choosemode].value}
               style={barChartStyle}
+              color={"#FFD700"}
             />
           }
           chart1={
-            <TagRankChart
-              data={tagdata}
+            <BarChart
+              mode={choosemode}
+              xname={'T'}
+              yname={'Mount'}
+              xvalue={commit[choosemode].value}
+              xdifference={commitdifference[choosemode].value}
               style={barChartStyle}
+              color={"#FFD700"}
             />
           }
+          style={cardStyle}
+          name={commitname[choosemode]}
+          name1={commitname[choosemode]}
         />
       </Grid>
       <Grid item container direction='column' xs={12} sm={4}>
-      <ChartSwitcher
-          chart0={
-            <BarChart
-              title={issuename[choosemode]}
-              mode={choosemode}
-              xname={'Time'}
-              yname={'Issue'}
-              xvalue={issue[choosemode].value}
-              xdifference={issuedifference[choosemode].value}
-              style={barChartStyle}
-            />
-          }
-          chart1={
-            <SolvedurationChart
-              title={'Issue Sloved Duration'}
-              xname={'Time'}
-              yname={'Mount'}
-              value={IssueSolveData}
-              style={barChartStyle}
-            />
-          }
-        />
-        <ChartSwitcher
-          chart0={
-            <BarChart
-              title={prname[choosemode]}
-              mode={choosemode}
-              xname={'Time'}
-              yname={'Pr'}
-              xvalue={pr[choosemode].value}
-              xdifference={prdifference[choosemode].value}
-              style={barChartStyle}
-            />
-          }
-          chart1={
-            <SolvedurationChart
-              title={'Pull Request Sloved Duration'}
-              xname={'Time'}
-              yname={'Mount'}
-              value={PrSolveData}
-              style={barChartStyle}
-            />
-          }
-        />
-
-      </Grid>
-      <Grid item container direction='column' xs={12} sm={4}>
-        <Card style={{ margin: '1rem 1rem 1rem 0' }}>
-          <ProjectTable data={projectTableData} />
+        <Card style={{height: '57.5vh',margin: '1rem 0rem 1rem 1rem'}}>
+          <TagRankChart
+            data={tagdata}
+            style={barChartStyle}
+          />
         </Card>
+       
+          <ChartSwitcher
+              chart0={
+                <BarChart
+                  mode={choosemode}
+                  xname={'T'}
+                  yname={'Mount'}
+                  xvalue={issue[choosemode].value}
+                  xdifference={issuedifference[choosemode].value}
+                  style={{ height: '50vh'}}
+                  color={"#3CB371"}
+                />
+              }
+              chart1={
+                <SolvedurationChart
+                  title={' '}
+                  xname={'T'}
+                  yname={'Mount'}
+                  value={IssueSolveData}
+                  style={barChartStyle}
+                />               
+              }
+              style={cardStyle1}
+              name={issuename[choosemode]}
+              name1="Issue Solved Duration"
+            />
+      </Grid>
+      <Grid item container direction='column' xs={12} sm={4}>
+          <CommitTable />
+          <ChartSwitcher
+            chart0={
+              <BarChart
+                mode={choosemode}
+                xname={'T'}
+                yname={'Mount'}
+                xvalue={pr[choosemode].value}
+                xdifference={prdifference[choosemode].value}
+                style={barChartStyle}
+                color={"#FFA07A"}
+              />
+            }
+            chart1={
+              <SolvedurationChart
+                title={' '}
+                xname={'T'}
+                yname={'Mount'}
+                value={PrSolveData}
+                style={barChartStyle}
+              />
+            }
+            style={cardStyle}
+            name={prname[choosemode]}
+            name1="Pull Request Solved Duration"
+          />
+          <RadioGroup
+            row
+            aria-label='time'
+            name='row-radio-buttons-group'
+            value={choosemode}
+            onChange={handlechange}
+          >
+            <FormControlLabel value='0' control={<Radio />} label='week' />
+            <FormControlLabel value='1' control={<Radio />} label='month' />
+            <FormControlLabel value='2' control={<Radio />} label='halfyear' />
+          </RadioGroup>    
       </Grid>
     </Layout>
   );
