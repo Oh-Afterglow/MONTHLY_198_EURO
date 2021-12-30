@@ -100,7 +100,11 @@ export default function Layout({ children }) {
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position='absolute' open={open} style={{ background: '#2E3B55'}}>
+        <AppBar
+          position='absolute'
+          open={open}
+          style={{ background: '#2E3B55' }}
+        >
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -115,7 +119,6 @@ export default function Layout({ children }) {
                 marginRight: '36px',
                 ...(open && { display: 'none' }),
               }}
-              
             >
               <MenuIcon />
             </IconButton>
@@ -170,7 +173,11 @@ export default function Layout({ children }) {
           }}
         >
           <Toolbar />
-          <Grid container spacing={3} style={{ padding: '4rem 2rem 2rem' }}>
+          <Grid
+            container
+            spacing={3}
+            style={{ padding: '2rem 2rem 2rem' }}
+          >
             {children}
           </Grid>
           <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
